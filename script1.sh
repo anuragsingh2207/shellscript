@@ -1,3 +1,3 @@
 
 echo "Hello World, Learning DevOps" 
-echo "Using AWS Git and Jenkins"
+echo "Using OCI Oracle Linux Git and Jenkins"
