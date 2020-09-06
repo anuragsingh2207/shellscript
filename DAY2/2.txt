@@ -1,0 +1,896 @@
+ 
+ File Test operators 
+
+ Looping statements 
+
+ Commandline arguments 
+
+ File Handling
+
+###############################################################################################
+
+ File Test operators
+ =====================
+    |	 |__File mode(read;write;execute)
+    |		      -r    -w     -x
+    |
+  File Types
+  ----------
+	1.Regular (or) ordinary file -f
+		a.ASCII/TEXT - User we can able to read/understanding format
+		b.ELF (ex: commands,object ) - user can't able to read/understanding format
+	
+	2. Directory  -d 
+	
+        3. Link file(or) softlink (or) symlink (or) link file  -l (or) -h
+
+	4. Device file
+		|
+		|__a. character type device - ex:print,keyboard,terminal  -c
+		|__b. block type device - ex: HD,USB,CDROM		  -b
+
+	5. named pipe(or) fifo -p
+	
+	6. Socket file 	-S (upper)
+	
+
+ root@host~]# ls {Enter}
+ p1.c ab.java test1.sh test2.pl test3.log repo.log a.py  b.txt
+ ==== ------- --------- ------   -------- -------- ----  ------ //user level
+  |							  |
+  |______________________ASCII/TEXT______________________ |
+			(kernel level)	
+
+	file <filename> - determine file type
+
+
+        file /etc/passwd -> ASCII/TEXT
+
+	file ab.java --->ASCII/TEXT
+
+	file /bin/date --->ELF 
+
+	file /etc ----->directory 
+
+	file /dev/null -->character type 
+ 
+	-e file is existing or not
+	-------
+	-s(lowercase) file is not empty 
+
+
+ test<space><FILETESTOPERATOR><space><InputFile>
+   (or)
+
+ [<space>FILETESTOPERATOR<space><INPUTFILE><space>]
+
+ 
+root@krosum:~/SH# file /etc/passwd
+/etc/passwd: ASCII text
+root@krosum:~/SH# 
+root@krosum:~/SH# test -f /etc/passwd ;echo $?
+
+root@krosum:~/SH# test -f /etc/passwd ;echo $?
+0
+root@krosum:~/SH# [ -f /etc/passwd ];echo $?
+0
+root@krosum:~/SH# [ -f /etc ];echo $?
+1
+root@krosum:~/SH# [ -d /etc ];echo $?
+0
+root@krosum:~/SH# [ -c /dev/null ];echo $?
+0
+root@krosum:~/SH# [ -b /dev/fd0 ];echo $?
+0
+root@krosum:~/SH# ls -l /dev/fd0
+brw-rw---- 1 root floppy 2, 0 Jun 23 09:17 /dev/fd0
+root@krosum:~/SH# 
+root@krosum:~/SH# test -e /etc;echo $?
+0
+root@krosum:~/SH# test -e /dev/null ;echo $?
+0
+root@krosum:~/SH# test -e /etc/passwd;echo $?
+0
+root@krosum:~/SH# cat pop.log
+cat: pop.log: No such file or directory
+root@krosum:~/SH# 
+root@krosum:~/SH# test -e pop.log;echo $?
+1
+root@krosum:~/SH# ls -l /etc/passwd
+-rw-r--r-- 1 root root 1754 Jan 28  2016 /etc/passwd
+root@krosum:~/SH# 
+root@krosum:~/SH# test -x /etc/passwd;echo $?
+1
+root@krosum:~/SH# test -r /etc/passwd;echo $?
+0
+root@krosum:~/SH# test -w /etc/passwd;echo $?
+0
+root@krosum:~/SH# test -x D1/p1.sh ;echo $?
+0
+root@krosum:~/SH# ls
+D1
+root@krosum:~/SH# test -f D1/p1.sh ;echo $?
+0
+root@krosum:~/SH# test -f D1/p1.sh -a -x D1/p1.sh ;echo $?
+0
+root@krosum:~/SH# test -x /etc;echo $?
+0
+root@krosum:~/SH# test -x /etc -a -f /etc;echo $?
+1
+root@krosum:~/SH# 
+
+
+ Write a shell script 
+ 
+ read a file name from <STDIN>
+ test input file is existing or not?
+		      |
+		      |
+		    if input file is exists - using file command - determine file type.
+
+ read -p "Enter a filename:" fname
+ 
+ if [ -e $fname ];then
+	echo "File:$fname is exists"
+	file $fname
+ else
+	echo "File:$fname is not exists"
+ fi
+ 
+
+
+ Write a shell script 
+ 
+ read a file name from <STDIN>
+ test input file is existing or not?
+		    --------   
+		       |___ test input file is reg.file or not
+					       --------
+						ls -l <filename> 
+		       |____test input file is directory file or not
+					        -----------
+						ls -ld <filename>
+
+		       |_______using file command - determine file type.
+
+ 
+
+
+     1	read -p "Enter a filename:" fname
+     2	 
+     3	if [ -e $fname ];then
+     4		if [ -f $fname ];then
+     5			echo "File:$fname is a reg.file"
+     6			ls -l $fname
+     7		elif [ -d $fname ];then
+     8			echo "File:$fname is a directory file"
+     9			ls -ld $fname
+    10		else
+    11			echo "File is exists"
+    12			file $fname
+    13		fi	
+    14	else
+    15		echo "File:$fname is not exists"
+    16	fi
+
+
+ Write a shell script
+
+  grep pattern  inputfile
+       -------  ----------
+		  |
+		 is not a reg.file ->display usage. 
+	 |
+	 | if file is reg.file 
+	 | read a pattern from <STDIN>
+    using grep command search a pattern from input file.
+
+
+   read -p "Enter a file name:" fname
+
+   if [ -f $fname ];then
+		...
+   else
+	echo "Usage: Sorry $fname is not a reg.file"
+	exit
+   fi	
+	
+   read -p "Enter a search keyword from $fname file" key
+  
+   	 
+   ---------------------------------------------------------
+      |||||||||||||
+  
+   read -p "Enter a file name:" fname
+
+   if ! [ -f $fname ];then
+  	echo "Usage: Sorry $fname is not a reg.file"
+	exit
+   fi	
+	
+   read -p "Enter a search keyword from $fname file" key
+  
+   grep $key $fname  <==
+   
+   if [ $? -ne 0 ];then
+	echo "Usage:Sorry Pattern $key is not exists from $fname file"
+   fi
+
+
+   yum install package >result.log 2>&1  <==
+	
+   if [ $? -ne 0 ];then
+	 echo "Usage: installation is failed refer result.log file more details"
+	 exit
+   fi
+
+   tar -cf Backup1.tar  L1 L2 L3  <==
+   
+   if [ $? -ne 0 ];then
+	echo "Usage: tar operation is failed"
+	exit
+   fi
+ 
+   mkdir /D1          <==
+   if [ $? -ne 0 ];then
+	echo "Usage: Directory creation is failed"
+	exit
+   fi
+  
+ ------------------------------------------------------------------------------------------
+ Write a shell script 
+ ---------------------
+ read a directory name from <STDIN>
+ 
+ test input directory is existing or not
+			 --------    ======
+			   |		|_____mkdir <dirname>
+			   |		      ------------------
+			directory is exists		|__display message to monitor
+			display directory details			
+  
+
+   read -p "Enter a directory name:" dname
+   
+   if [ -d $dname ];then
+	echo "Directory is exists"
+	echo "Directory $dname details"
+	ls -ld $dname
+   else
+	mkdir $dname >result.log 2>&1
+	if [ $? -eq 0 ];then
+		echo "Directory $dname is created"
+		ls -ld $dname
+	else
+		echo "Directory creation is failed"
+		echo "refer result.log  file"
+	fi
+
+   fi
+
+ ###############################################################################################
+
+  Write a shell script 
+
+  read a directory name from <STDIN> (validation) 
+
+  copy all the .log files to newdirectory 
+  (cp *.log Directory name)
+  (display ack to monitor)
+
+  using tar command take backup.tar file  
+  display usage if tar operation is failed. 
+  
+  read -p "Enter a directory name:" dname
+
+  if ! [ -d $dname ];then
+	mkdir $dname
+	if [ $? -ne 0 ];then
+		echo "Directory creation is failed"
+		exit
+	fi
+  fi
+
+  cp *.log $dname 
+  if [ $? -eq 0 ];then
+	echo "all log files are copied to $dname directory"
+  fi
+
+  tar -cf B1.tar $dname 
+  if [ $? -ne 0 ];then
+	echo "tar operation is failed"
+  fi
+
+ #################################################################################################
+
+  Looping statements 
+  --------------------
+   code block will repeat more than one time.
+
+   1. conditional style loop - while until 
+   2. collection  style loop - for select 
+
+   1. conditional style loop - while until
+   -----------------------------------------
+	
+   while loop
+   -----------
+   Syntax:-
+   ---------
+   initialization
+  
+   while<space>[ condition ]
+   do
+	code block
+   done
+	
+   3rules
+   -------
+   1.initialization (ex: i=0 )
+
+   2.condition (ex: [ $i -lt 5 ] )
+
+   3.increment/decrement (ex: i=`expr $i + 1` (or) i=`expr $i - 1`)
+
+  	
+  i=0						i=0
+  while [ $i -lt 5 ]				if [ $i -lt 5 ]
+  do						then
+	echo "Hello $i"		Vs			echo "Hello $i"
+							i=`expr $i + 1`
+	i=`expr $i + 1`				fi
+  done
+  						Hello 0
+  Hello 0
+  Hello 1
+  Hello 2
+  Hello 3
+  Hello 4	
+
+
+  # while do done -keywords 
+  #
+
+ i=0
+ while [ $i -lt 5 ]
+ do
+	uptime
+	sleep 2
+	vmstat
+	sleep 1
+	ps
+	sleep 2
+	df -Th
+	sleep 1
+	i=`expr $i + 1`
+ done
+
+
+ while<space>:
+ do
+
+	always true
+ done
+
+ while true
+ do
+	always true
+ done
+
+ break - exit from loop
+ -----
+
+ exit is a command		vs		break  is looping statement 
+ ----						-----
+  |						  |__not an os command
+  |__os command
+  |						  |___we can place break loop inside only(not outside the loop)
+  |__we can use exit 
+     command anywhere in the
+     program.
+   
+  |__we can use exit in side
+     condition,loop,outside condition
+     outside loop,function
+
+  |__ exit - exit from process
+
+
+  
+ while ! [ condition ]
+ do
+
+ done
+ -----------------------------------// until [ condition ]
+				       do
+				       done
+
+ test the condition -->True --->exit from  loop (opp.while)
+ ------------------  
+      |______________ False -->Code block will execute(opp.while)
+
+  
+  total_used above 1000 MB -->Warining mail to user 
+  .......... ========== 
+  every 1 Hr once test memory usages.
+
+  while [ $total -gt 1000 ]		vs	until [ $total -lt 1000 ]
+  do
+
+   echo "Memory report message"|mail -s "memory overflow"  userA@hostname.com 
+   sleep 3600
+  done
+  
+ ==============================================================================================
+
+ Collection style loop
+ ----------------------
+  |__more than one value - collection(ex: command results,file content,filter result,Array,cmdline args etc)
+
+  Syntax:-
+  =========
+  for variable in collection
+  do
+	code block
+  done
+
+  # for in do done  -keywords 
+ 
+  for v in 10 1.34 data /etc/passwd 10.20.30.40
+  do
+	echo "Hello..$v"
+  done
+ 
+  Hello..10
+  Hello..1.34
+  Hello..data
+  Hello../etc/passwd
+  Hello..10.20.30.40
+  
+  select
+  ------
+     |__menu driven programming
+
+     |__Collection style
+
+     |__ PS3 #? 
+     |___menu index number 1 ...N
+	
+     |___Always running
+
+  Syntax:-
+  ---------
+  select variable in collection(menuitems)
+  do
+	code block
+  done
+
+
+ 
+ select + case 
+ ------   ====
+  |        |
+ loop     conditional 
+
+
+  select variable in collection 
+  do
+	case $variable in
+	pattern1)  pattern1 operation 
+		  ;;
+	pattern2)  pattern2 operation
+		  ;;
+	pattern3)  pattern3 operation
+		  ;;
+	...
+	patternN) patternN operation
+		 ;;
+	*)	default operation
+	esac
+ done
+
+ 
+ for loop - we can write in compound style
+ ---------
+
+ echo $((10+20))
+
+ n=5
+
+ echo $((++n))
+
+ ((n<10))
+
+
+ for((i=0;i<5;i++))
+ do
+	code block will execute - 5times
+ done
+ 
+##################################################################################################
+Q1. Write a shell script that emulates the high-street bank mechanism for
+checking a PIN. Keep taking an input from the keyboard (STDIN)
+until it is identical to a PIN declared.
+
+Restrict the number of attempts to 3 and output a suitable message for success and failure.
+
+note: use whileloop
+
+pin=1234
+c=0
+while [ $c -lt 3 ]
+do
+	read -p "Enter a pin number:" PIN
+	c=`expr $c + 1`
+	if [ $PIN -eq $pin ];then
+		echo "Success pin is matched..$count"
+		break #exit from loop
+	fi
+done
+if [ $pin -ne $PIN ];then
+	echo "Sorry pin is blocked"
+fi
+=============================================================================================
+Q2. Write a shell script calculate sum of memory utilization
+    memory_util="16 50 300 5 40 110"
+    Note: use for loop
+    t=0
+    for v in $memory_util
+    do
+		t=`expr $v + $t`
+    done
+    echo "Sum of memory utilization:$t"
+=============================================================================================
+Q3. File: IP.txt
+    --------------
+    data1
+    data2
+    data3
+    data4
+    data5
+   -----------------
+
+   Write a shell script
+   read a above file IP.txt
+   display line content with line number
+
+ Expected result
+ ------------------   
+   1.data1
+   2.data2
+   3.data3
+   4.data4 
+   5.data5
+  -----------------------
+   Total no.of lines:5
+ ------------------------
+
+  read -p "Enter a filename:" fname
+  
+  if ! [ -f $fname ];then
+	echo "Usage Sorry $fname is not a reg.file"
+	exit
+  fi
+  c=0
+  for v in `cat $fname`
+  do
+	c=`expr $c + 1`
+	echo "$c. $v"
+  done
+  echo
+  echo -e "\t Total no.of lines:$c"
+
+	
+=============================================================================================
+
+ Commandline arguments 
+ ----------------------
+	|__Runtime inputs 
+	|
+	|__commandlines   ---> root@host~]# ./p1.sh input1 input2 input3 input4 ... inputN
+						    --------------------------------------
+								runtime inputs
+
+
+	execution input		vs	 runtime input
+	---------------			 --------------
+	read variable			 commandline args
+	
+	interactive input		 non-interactive input
+
+	script-Running State		 script - Notactive(Running) state
+						                                          
+					root@host~]# ./p1.sh input1 input2 input3 input4 ... inputN
+							     ------
+								$1    $2     $3     $4        $n
+
+
+	echo $1....$9 
+
+	(or)
+	echo ${n}  ==>10th argument ->echo ${10}
+		   ==>11th argument ->echo ${11}
+		   -->15th argument ->echo ${15}
+
+	3rd argument -->echo $3 
+	------------
+	    |_____________echo ${3} 
+
+
+	echo $10
+	     --
+	      |__A0
+		 |
+		1st argument
+
+	echo ${10}
+
+	in shell script commandline arguments are called positional parameters 
+							.........................
+							 $1...${n}
+
+	$1 (or) ${1} 
+
+	
+	file:p1.sh
+	-----------
+	read -p "Enter a count value:" count
+	
+	read -p "Enter a IP Address:" IP
+
+	ping -c $count $IP >/var/log/ping_result.log
+
+	------------------------------------------------
+
+	crontab -e 
+
+	10:30PM
+
+	30 22 *  *   *  /bin/bash /root/project/p1.sh 
+	------------------------------------------------------
+	
+	10:30 -->crond ---->bash ---->/root/project/p1.sh
+
+
+	
+
+	File:p2.sh
+	------------
+	ping -c $1 $2 >/var/log/ping_result.log
+	-------------------------------------------
+
+	crontab -e
+
+	30 22 *  *    *  /bin/bash /root/project/p2.sh  3  127.0.0.1 
+						       $1  ----$2---
+ 	
+
+	10:30 -->crond ---->bash ---->/root/project/p2.sh 3 127.0.0.1
+				
+
+
+
+	$1 - $9 
+	${1} - ${n}
+
+	$0 ->script filename
+
+	$@/$* -> list of all
+
+	$# --->total no.of arguments
+
+	
+ in oldversion
+ --------------
+	|
+	shift command 
+	
+	shift N
+	      --
+
+	echo $1 $2 $3 $4 $5
+	shift 3
+
+	echo $1 $2 $3 $4 $5
+	      + +  +   +  +
+              3 3  3   3  5
+ 	      | |  6th 7th 8th argument
+	      | 5th argument
+	     4th argument
+
+	
+	shift 9
+	echo $1 $2 $3  $4 $5 ...$9
+
+------------------------------------------------------------------------------------------
+  -z (zero) -->Variable
+
+	test input variable is empty or not
+	
+	v=""
+	test -z $v;echo $?
+	0
+	v=1
+	test -z $v;echo $?
+	1
+
+	if [ $# -eq 0 ] ---> if [ -z $1 ]
+				    ### 1st argument is empty 
+
+
+root@krosum:~/SH# v1=`grep bash /etc/passwd`
+root@krosum:~/SH# 
+root@krosum:~/SH# v2=`grep tcsh /etc/passwd`
+root@krosum:~/SH# 
+root@krosum:~/SH# echo $v1
+root:x:0:0:root:/root:/bin/bash apelix:x:1000:1000:karthikeyan,,,:/home/apelix:/bin/bash UserA:x:1002:1002::/home/UserA:/bin/bash
+root@krosum:~/SH# 
+root@krosum:~/SH# echo $v2
+
+root@krosum:~/SH# test -z $v1;echo $?
+-su: test: too many arguments
+2
+root@krosum:~/SH# test -z "$v1";echo $?
+1
+root@krosum:~/SH# test -z "$v2";echo $?
+0
+root@krosum:~/SH# 
+
+###########################################################################################################
+  
+ File Handling
+ -------------
+ 
+			read			 echo
+ Keyboard(STDIN) --------------------Script-------------------------Monitor(STDOUT)
+				    .........
+					|
+					| < - read  > - write  >> - append
+					|
+				      Storage(FILE)
+
+
+ read data from FILE -->script ----->display to monitor --->(1)
+
+ from script ------>create a new file & write data to FILE -->(2)
+ 
+ read data from oneFILE -->script-->create and write data to new FILE -->(3)
+
+
+ while loop
+ ------------
+	1. Conditional style loop
+	
+	2. File Handling 
+
+ 
+
+read data from FILE -->script ----->display to monitor --->(1)
+-------------------
+ cat filename 
+ ------------
+
+
+ Syntax:-
+ ---------
+ while read var (2)
+ do
+	code block (3)
+
+ done <inputfile (1)
+
+ -----P1------  ----P2-------- 
+ cat filename | while read var
+do
+	echo "$var"
+done
+
+ 
+  while read var # reading from FILE
+  do
+	echo "$var" # display to monitor
+  done<inputfile
+      -----------
+      like cat operation (P1)
+
+
+ 
+ 
+
+read data from <STDIN>---> from script ------>create a new file & write data to FILE -->(2)
+
+ while read var # interface to keyboard
+ do
+	echo $var # display to monitor
+ done
+
+ 
+ while read var # interface to keyboard
+ do
+	echo $var
+ done >newfile
+     ########## create a new file /write data to FILE
+ 
+
+
+
+ 
+ read data from oneFILE -->script-->create and write data to new FILE -->(3)
+ 
+ syntax:-
+ ===========
+ while read var(2)
+ do 
+	codeblock(3)
+
+ done<inputfile  >resultfile
+	(1)	  (4)
+
+ while read var 
+ do
+	echo $var
+ done</etc/passwd >e1.conf
+
+ ### cp /etc/passwd e1.conf 
+
+
+ c=0
+ while read var
+ do
+	c=`expr $c + 1`
+	if [ $c -gt 10 -a $c -lt 21 ];then
+		echo $c $var
+	fi
+ done</etc/passwd >e2.conf
+      ----------- ==========
+
+  line number 11 to 20th line contents are writing to new file(e2.conf)
+
+  
+ Using commandline arguments 
+ -----------------------------
+ read data from oneFILE --> script  --> write data to another FILE
+		($1)					($2)
+
+  
+  Validations:
+ ----------------
+	-->not empty argument
+	-->not allowed more than two and less than two input files (ex: ./p40.sh r1.log
+								    ex: ./p40.sh r1.log r2.log r3.log)
+		
+	
+
+	-->input file must be reg.file (ex: ./p40.sh /etc r3.log)
+
+	-->result file should not exists  (ex: ./p40.sh test.log p1.sh)
+								 ------
+								   |__already exists 
+
+
+
+
+
+ if [ $#  -ne 2 ];then
+	echo "Usage:Commandline arg allowed 2 argumets"
+	exit
+ fi
+
+ if ! [ -f $1 ];then
+	echo "Usage:Sorry file $1 is not a reg.file"
+	exit
+ fi
+
+ if [ -e $2 ];then
+	echo "Usage:file $2 is already exists"
+	exit
+ fi
+
+ while read var
+ do
+	echo "$var"
+	echo "----------------"
+ done<$1 >$2
+
+	
+ ###########################################################################################################################

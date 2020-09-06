@@ -1,0 +1,545 @@
+  
+ sed 
+ ----
+   |___ Line number (or) address
+   |
+   |____/text/(or)/string/
+        Regx
+
+   sed -n '3,6p' inputfile
+
+   sed -n '/pattern1/,/pattern2/p' inputfile vs sed -n -e '/pattern1/p' -e '/pattern2/p' inputfile
+						===================================================
+	 					  |__grep -E "Pattern1|Pattern2" inputfile
+
+
+  sed -n '/pattern1/,/pattern2/w result.log'
+
+  sed  '/pattern1/,/pattern2/d' inputfile
+
+  sed  '/pattern1/,/pattern2/s/OLDPATTERN/NEWSTRING/' inputfile
+	....................
+
+  modifier
+  --------
+  g - global
+
+  i - ignorecase
+
+  sed 's/old/new/gi' 
+
+  sed 's/old/new/' input
+
+   [[:space:]] (or) \s
+
+
+
+root@krosum:~/SH# ps -e|sed -r '/^\s+[0-9]{2,4}/s/bash|sed|e$/****/'
+
+ 
+root@krosum:~/SH# ps -e|sed -r '/^\s+[0-9]{2,4}/s/bash|sed|e$/((&))/'
+
+
+root@krosum:~/SH# ps -e|sed -nr '/^\s+[0-9]{2,4}/s/bash|sed|e$/((&))/p'
+  611 ?        00:00:00 kpsmou((sed))
+ 1370 ?        00:00:00 console-kit-da((e))
+ 2693 ?        00:00:00 bluetooth-appl((e))
+ 2700 ?        00:00:00 gvfs-gdu-volum((e))
+ 2712 ?        00:00:00 gvfs-afc-volum((e))
+ 2789 ?        00:00:00 hud-servic((e))
+ 2882 ?        00:00:00 unity-files-da((e))
+ 2883 ?        00:00:00 unity-music-da((e))
+ 2885 ?        00:00:00 unity-lens-vid((e))
+ 3000 ?        00:00:00 gnome-pty-help((e))
+ 3001 pts/0    00:00:00 ((bash))
+ 3071 pts/0    00:00:00 ((bash))
+ 3325 pts/3    00:00:00 ((bash))
+ 3386 pts/3    00:00:00 ((bash))
+ 3754 pts/3    00:00:00 ((sed))
+
+
+root@krosum:~/SH# ps -e|sed -nr '/^\s+[0-9]{2,4}/s/bash|sed|e$/((&))/p'
+  611 ?        00:00:00 kpsmou((sed))
+ 1370 ?        00:00:00 console-kit-da((e))
+ 2693 ?        00:00:00 bluetooth-appl((e))
+ 2700 ?        00:00:00 gvfs-gdu-volum((e))
+ 2712 ?        00:00:00 gvfs-afc-volum((e))
+ 2789 ?        00:00:00 hud-servic((e))
+ 2882 ?        00:00:00 unity-files-da((e))
+ 2883 ?        00:00:00 unity-music-da((e))
+ 2885 ?        00:00:00 unity-lens-vid((e))
+ 3000 ?        00:00:00 gnome-pty-help((e))
+ 3001 pts/0    00:00:00 ((bash))
+ 3071 pts/0    00:00:00 ((bash))
+ 3325 pts/3    00:00:00 ((bash))
+ 3386 pts/3    00:00:00 ((bash))
+ 3767 pts/3    00:00:00 ((sed))
+root@krosum:~/SH# ps -e|sed -nr '/^\s+[0-9]{2,4}/s/bash|sed|e$//p'
+  611 ?        00:00:00 kpsmou
+ 1370 ?        00:00:00 console-kit-da
+ 2693 ?        00:00:00 bluetooth-appl
+ 2700 ?        00:00:00 gvfs-gdu-volum
+ 2712 ?        00:00:00 gvfs-afc-volum
+ 2789 ?        00:00:00 hud-servic
+ 2882 ?        00:00:00 unity-files-da
+ 2883 ?        00:00:00 unity-music-da
+ 2885 ?        00:00:00 unity-lens-vid
+ 3000 ?        00:00:00 gnome-pty-help
+ 3001 pts/0    00:00:00 
+ 3071 pts/0    00:00:00 
+ 3325 pts/3    00:00:00 
+ 3386 pts/3    00:00:00 
+ 3770 pts/3    00:00:00 
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# fname="/etc/passwd"
+root@krosum:~/SH# 
+root@krosum:~/SH# echo $fname
+/etc/passwd
+root@krosum:~/SH# # ls -l /etc/passwd
+root@krosum:~/SH# # ------//insert (or) add at the beginning 
+root@krosum:~/SH# 
+root@krosum:~/SH# echo $fname|sed 's/^/ls -l/'
+ls -l/etc/passwd
+root@krosum:~/SH# echo $fname|sed 's/^/ls -l /'
+ls -l /etc/passwd
+root@krosum:~/SH# v=`echo $fname|sed 's/^/ls -l /'`
+root@krosum:~/SH# echo $v
+ls -l /etc/passwd
+root@krosum:~/SH# $v
+-rw-r--r-- 1 root root 1754 Jan 28  2016 /etc/passwd
+root@krosum:~/SH# 
+root@krosum:~/SH# cost=4567
+root@krosum:~/SH# 
+root@krosum:~/SH# # 4567$
+root@krosum:~/SH# 
+root@krosum:~/SH# echo $cost|sed 's/$/$/'
+4567$
+root@krosum:~/SH# echo $cost|sed 's/$/Rs/'
+4567Rs
+root@krosum:~/SH# echo $cost|sed 's/^/Rs/'
+Rs4567
+root@krosum:~/SH# vi pt.sh
+root@krosum:~/SH# find ~ -name pt.sh
+/root/BASH/DB/pt.sh
+/root/pt.sh
+/root/Oracle_Shell/Day3/Filters_Functions/pt.sh
+/root/Oracle_Shell/Day2/pt.sh
+/root/Oracle_Shell/Day2/Demo/pt.sh
+/root/Oracle_Shell/Day1/pt.sh
+^C
+root@krosum:~/SH# cat /root/pt.sh 
+echo "Test1"
+echo "Test2"
+# ----------------------
+echo "CPU Load balance:-"
+uptime # display cpu loadbalance
+echo "------------------"
+# using uptime
+# we can get cpu load avg
+# how hrs cpu is running
+# it's belongs to /proc
+###################
+echo "End of the line"
+root@krosum:~/SH# cp /root/pt.sh  .
+root@krosum:~/SH# 
+root@krosum:~/SH# cat -n pt.sh 
+     1	echo "Test1"
+     2	echo "Test2"
+     3	# ----------------------
+     4	echo "CPU Load balance:-"
+     5	uptime # display cpu loadbalance
+     6	echo "------------------"
+     7	# using uptime
+     8	# we can get cpu load avg
+     9	# how hrs cpu is running
+    10	# it's belongs to /proc
+    11	###################
+    12	echo "End of the line"
+root@krosum:~/SH# 
+root@krosum:~/SH# # 1. delete all the comments 
+root@krosum:~/SH# # 2. delete all the empty lines
+root@krosum:~/SH# # 3. execute the shell commands
+root@krosum:~/SH# # 4. write command results to new file.
+root@krosum:~/SH# #
+root@krosum:~/SH# 
+
+
+
+
+root@krosum:~/SH# sed 's/#.*//' pt.sh 
+echo "Test1"
+echo "Test2"
+
+echo "CPU Load balance:-"
+uptime 
+echo "------------------"
+
+
+
+
+
+echo "End of the line"
+root@krosum:~/SH# sed -e 's/#.*//' pt.sh -e '/^$/d'
+echo "Test1"
+echo "Test2"
+echo "CPU Load balance:-"
+uptime 
+echo "------------------"
+echo "End of the line"
+root@krosum:~/SH# sed -e 's/#.*//' pt.sh -e '/^$/d' -e 'e'
+Test1
+Test2
+CPU Load balance:-
+ 10:05:41 up  1:09,  2 users,  load average: 0.46, 1.03, 1.00
+------------------
+End of the line
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -e 's/#.*//' pt.sh -e '/^$/d' -e 'e' -ne 'w r2.log'
+root@krosum:~/SH# 
+root@krosum:~/SH# cat r2.log 
+Test1
+Test2
+CPU Load balance:-
+ 10:05:52 up  1:09,  2 users,  load average: 0.39, 1.00, 0.99
+------------------
+End of the line
+root@krosum:~/SH# 
+root@krosum:~/SH# vi ptr.txt
+root@krosum:~/SH# cat -n ptr.txt 
+     1	sales
+     2	prod
+     3	admin
+root@krosum:~/SH# grep -f ptr.txt emp.csv 
+304,arun,sales,pune,10340
+302,vijay,prod,chennai,24901
+452,ram,sales,bglore,3524
+294,zion,sales,pune,49050
+842,arun,prod,pune,49040
+245,kumar,prod,bglore,49504
+root@krosum:~/SH# cat >pt.txt
+/sales/p
+/prod/p
+/admin/p
+root@krosum:~/SH# sed -n -f pt.txt emp.csv 
+304,arun,sales,pune,10340
+302,vijay,prod,chennai,24901
+452,ram,sales,bglore,3524
+294,zion,sales,pune,49050
+842,arun,prod,pune,49040
+245,kumar,prod,bglore,49504
+root@krosum:~/SH# 
+root@krosum:~/SH# cat emp.csv 
+304,arun,sales,pune,10340
+302,vijay,prod,chennai,24901
+452,ram,sales,bglore,3524
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+294,zion,sales,pune,49050
+842,arun,prod,pune,49040
+245,kumar,prod,bglore,49504
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n -e '/sales/p' -e '/admin/p' -e '/prod/p' emp.csv 
+304,arun,sales,pune,10340
+302,vijay,prod,chennai,24901
+452,ram,sales,bglore,3524
+294,zion,sales,pune,49050
+842,arun,prod,pune,49040
+245,kumar,prod,bglore,49504
+root@krosum:~/SH# cat -n pt.txt 
+     1	/sales/p
+     2	/prod/p
+     3	/admin/p
+root@krosum:~/SH# sed -n -f pt.txt emp.csv 
+304,arun,sales,pune,10340
+302,vijay,prod,chennai,24901
+452,ram,sales,bglore,3524
+294,zion,sales,pune,49050
+842,arun,prod,pune,49040
+245,kumar,prod,bglore,49504
+root@krosum:~/SH# 
+
+
+
+#####################################################################################################
+
+
+ grep (searching)
+ ----
+ grep -option  pattern  inputfile
+ ----
+
+ pattern ->Text
+
+ Action --> print 
+
+ sed -option 'pattern Action' inputfile
+ ----
+ pattern
+ =======
+	-> 1. Linenumber
+
+	-> 2. /text/(or)/string/
+
+  Action
+ --------  print(p) write(w) delete(d) substitute(s) insert(i) append(a) execute(e) change(c)
+
+
+  awk (search+formatting)
+ =====
+ 
+  awk -option '/pattern/{Action}' inputfile
+
+  pattern --> /Text/
+
+  Action -->print
+			
+  awk -option
+
+	-F (FS)
+	-f (like grep -f patternfile ; sed -f patternfile  )
+
+
+
+  awk
+  ----
+	1. read the input (file;pipe) line by line ______________(record buffer)
+
+	2. split each line into multiple fields |   |    |   | (field buffer)
+          (based on -F ) - default FS is space 
+
+	3. search the pattern
+
+	4. Action (print)
+
+
+  File: a.txt
+  ------------
+  101:usrA:bash
+  203:usrB:sh
+  405:usrC:bash
+  ==============
+		
+	awk -option '/pattern/{print}' inpufile 
+
+	awk -option '/bash/{print}' a.txt
+
+	STEP 1: read the input (file;pipe) line by line ______________(record buffer)
+	-------------------------------------------------------------------------------
+	------------------
+	1  101:usrA:bash
+	------------------
+	2  203:usrB:sh
+        ------------------
+        3  405:usrC:bash
+        ------------------
+
+	STEP 2: split each record(row) into multiple fields -F
+	
+	awk -F: '/bash/{print}' a.txt
+
+        NR $1   $2    $3(or)$NF
+        ------|----|------
+	1  101|usrA|bash
+	------|----|------
+	2  203|usrB|sh
+        ------|----|------
+        3  405|usrC|bash
+        ------|----|-------
+          |<-----$0-------->|
+
+	$1 ... $NF - Fields 
+	
+        $0 -- record 
+	NR - record number
+	NF - Total no.of fields 
+
+	-F(option) //commandline --> FS (variable)
+	
+	OFS(output field sep)
+
+	RS;ORS - default \n
+
+	STEP 3: /bash/{print}
+
+	STEP 4: Action
+
+	 101 usrA bash
+	 405 usrC bash
+	
+ ##############################################################################################
+ 
+  split single data to multiple data 
+        ===========    =============
+        (string)	(array)
+
+   split() - function - awk
+
+   split("input_string","output_array","sep")
+
+   msg="safasdds afsdas fsdafsdfsdfs,sdafds sfsadfds sdaf userA@hostname.com asfsdafds sdafsd"
+       |										      |
+       | userA@hostname.com |
+	      |------------
+
+	split("userA@hostname.com",A,"@")
+
+	print A[1] -->userA
+	print A[2] ------>hostname.com
+
+        split("userA@hostname.com",A,"[@.]")
+	
+	[userA hostname com]
+	 ----- ======== ----
+          1     2        3 
+	
+	A[1] ->userA
+	A[2] ->hostname
+	A[3] ->com
+	
+	  
+
+ Q1. Inventory
+
+ Q2. calculate sum of memory utilization from /proc/meminfo - excluding total memory
+
+ Q3. free -m 
+	caluclate sum of used/free/avaiable space - use select loop 
+
+ 
+      function f1(){
+
+		...
+		...
+      }
+
+
+      function f2(){  }
+
+      function f3(){  }
+
+      select v in TOTAL  USED  FREE QUIT
+      do
+		case $v in
+		TOTAL)  f1 ;;
+
+		USED)   f2 ;;
+
+		FREE)   f3 ;;
+		
+		QUIT)  echo "Thankyou";break ;;
+		
+		*)	echo "Invalid choice"
+      done
+	
+ #########################################################################################
+
+  Heredocument (or) Line oriented document <<
+
+
+   
+   shell-script ------------------------------ DATABASE(SQL)
+
+   (command)
+	
+	command<<Flag
+
+	 DB-QUERY
+	 ..
+	Flag
+
+  
+  root@host~]#fdisk /dev/xvdb{Enter}
+
+   n
+   p
+   +5G
+   n
+   +10G
+   w
+   --
+
+  fdisk /dev/xvdb<<abc
+   n
+   p
+   +5G
+   n
+   +10G
+   w
+  abc
+   fdisk -l | grep /dev/xvdb
+
+   /dev/xvdb1
+   /dev/xvdb2
+	
+
+  shell(command) ----------------------------- broswer(<html>)
+
+  echo "<html>"
+  echo "<head>"
+  ...
+  echo "<p><font color=green>Hello</p></font>"
+
+   Terminal
+   
+  <html>
+  <head>
+  ...
+  <p><font color=green>Hello</p>
+  
+  echo ".." |mail -s subject user@hostname.com
+
+
+  CGI
+
+  Client ---->WEbserver------>Scripts
+				....
+				....
+	
+		<---------------
+
+		Content-type:text/html\n
+		 ...
+		 ...
+		 ... response code
+
+
+ Install webserver
+
+ configure webserver
+ ----------
+  ->client .html(index.html)
+
+ ->Server file(OL/RH -> /cgi-bin/ /var/www/cgi-bin/p1.sh p1.py p1.py p1.cpp p1.rb ...
+
+ open a browser ->on the addressbar -> 10.20.30.40(IP)
+
+ 
+ 10.20.30.40/cgi-bin/scriptfile.sh
+ ------------------------------------
+
+ HOSTS=("10.20.30.40" "10.20.30.60" "host01" "host02.example.com") 
+
+ CMDS="pwd;uptime;df -Th|grep ^/dev"
+
+ for  v in ${HOSTS[@]}
+ do
+	ssh -l <USERNAME> $v $CMDS
+ done
+
+ 
+ Var=`ssh root@host01<<Abc
+	date
+	pwd
+	hostname
+	...
+ Abc`
+ 
+ V=`date +%H-%M-%S`
+ if [ -z $Var ];then
+	...
+ else
+	echo "$Var" >"$V.log"
+ fi
+
+ ##################################################################################################

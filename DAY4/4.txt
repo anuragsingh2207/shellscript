@@ -1,0 +1,2244 @@
+Regx
+sed-commands
+sed+Regx
+============================================================
+Regx
+-----
+  |___grep sed awk //commands 
+
+
+	root@hostname~]# ls {Enter}
+	p1.java p2.c p3.txt p4.txt q1.txt 
+
+	root@hostname~]# ls *.txt {Enter}
+	p3.txt p4.txt q1.txt
+
+	Regx
+	-----
+	|_1.BRE
+	|_2.ERE
+
+  1.BRE 					2.ERE
+  ------					------
+  single pattern				more than one pattern
+
+   ^						|
+   $						()
+   ^pattern$					+
+						{}
+   .
+   .*
+   ^$
+   
+   [  ]
+   ^[  ]
+   [ ]$
+
+   [^  ]
+   
+
+ File:IP.txt
+ ------------
+ 101,ram,sales,pune
+ sales,vijay
+ sales,
+ anu,sales
+ sales<space>
+ sales
+ xerox,sales
+ sample data
+--------------------
+
+   grep sales IP.txt
+
+ 101,ram,sales,pune
+ sales,vijay
+ sales,
+ anu,sales
+ sales<space>
+ sales
+ xerox,sales
+
+
+	^pattern
+	
+  
+   grep ^sales IP.txt
+
+  sales,vijay
+  sales,
+  sales<space>
+  sales
+
+  grep ^s IP.txt
+  sales,vijay
+  sales,
+  sales<space>
+  sales
+  sample data
+
+
+  pattern -> string /digits/any character/space/specialchar 
+  -------
+
+   grep ^sales 
+   grep ^s 
+   grep ^5 
+
+   grep ^" "
+
+   grep ^#
+        ------
+
+   ^pattern
+
+
+   pattern$
+
+	
+  grep sales$
+  grep s$
+  grep " "$
+  grep 00$
+
+  
+   ^sales
+
+   sales$
+
+   ^sales$ - pattern only 
+
+   ^pattern$ 
+
+   .(dot) - match any single character 
+		 -----------
+		 A-Za-z0-9spacespecial (except \n)
+
+    ^.. - line starts with any two chars 
+   
+    ..$ - line ends with any two chars 
+
+ 
+    .* - list of all 
+   
+     * -zero or more 
+
+     character class - character based search
+    --------------------------------------------
+	[ ]
+
+       [Aa]run
+       ---------->Arun
+       --------------------->arun
+
+         [Aav]run
+	 --------
+	  Arun  arun  vrun
+
+	[Aa][Bb]xyz
+	------------
+	 ABxyz
+	 Abxyz
+	 aBxyz
+	 abxyz
+	
+        [Aa5][Bb]xyz
+	 
+	 ABxyz
+	 Abxyz
+	 aBxyz
+	 abxyz
+	 5Bxyz
+	 5bxyz
+
+	 grep  sale IP
+	       ----
+		|_word
+
+	 grep [sale] IP
+	      ------
+		|_s a l e - character 
+
+	 aix ->matched
+	 -							POSIX - class
+
+         [a-z] --> match any lowercase chars	======>		[[:lower:]] 
+
+	 [A-Z] --> match any uppercase chars   ==========>      [[:upper:]]
+
+	 [A-Za-z] -->match any alpha ========================>  [[:alpha:]]
+
+	 [0-9] -->match any digits  ==========================> [[:digit:]]
+
+	 [A-Za-z0-9] -->match any alpha number  ============> [[:alnum:]]
+
+	  " " ---------------------------------------------> [[:space:]]
+			
+	  [^A-Za-z0-9" "] ====>match only specialchar ------> [[:punct:]] 
+
+
+
+	 [aT5] 
+	 -------
+	   |__any where character 'a' 'T' '5' is matched ->True
+
+   File
+   -------
+   aix
+   aT
+   Temp
+   OL5
+   ----------
+	grep  [aT5] File
+	
+	aix
+        -
+	aT
+        --
+	Temp
+	-
+	OL5	
+	  -
+
+      grep  ^[aT5] File			grep  [aT5]$  File
+						
+	aix				aT						
+	-				 -
+	aT				OL5
+	-				  -
+	Temp
+	-
+	
+     grep  [^aT5]  File
+	  ========
+	    |
+	    |__NOT Matching pattern 'a' 'T' '5' 
+
+	aix
+	 --
+	Temp
+	 ---
+	OL5
+	--
+
+    ^[A-Z]	vs	[^A-Z]
+    ------		-------
+     |			   |
+  Line starts		NOT matching any uppercase chars 
+  with any 
+  uppercase
+  chars			[^a-z]
+
+	[^A-Za-z] ->NOT matching  any alpha (match - digits space and specialchars )
+
+	[^0-9] -> NOT matching any digits
+
+	[^A-Za-z0-9] --->match space and specialchars 
+
+	[^A-Za-z0-9" "] ====>match only specialchar
+
+ 
+  ^$ ------> empty line
+
+	
+ ####################################################################################################
+
+  ERE - grep -E ;  sed -r 
+  ===
+   |
+   ()
+    +
+    {}
+
+
+   |  ->  like logical or ( True False ; False True ; True True -->True ) 
+
+ 
+   pattern1|pattern2|pattern3|..|patternN //any one pattern is matched (any order/any where)
+
+
+  ( ) ---> like logical AND (True True) ->True
+  
+
+	(pattern1)(pattern2)
+	==========------------//both pattern should match (same order)
+
+ 
+  + --> 1 or more 
+
+  <Pattern>+  
+
+
+  ab+c 
+
+  abc abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbc 
+
+  ^[A-Z][0-9]+[a-z]$
+	======
+
+	A4f B2k B1231212121324543543543534534k L423434324233243223423fg
+
+
+	
+  {} - IRE
+  ------------
+
+	<Pattern>{n} times 
+
+	ab{2}c ---> abbc
+
+	^[A-Z][0-9][0-9][0-9][a-z]$
+	 ==== ---------------=====
+	  |
+	 ^[A-Z][0-9]{3}[a-z]$
+	       --------
+
+
+	<Pattern>{n,} times  minimum 'n' times ,maximum no limit 
+
+	ab{2,}c ==> abbc abbbc abbbbc abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbc 
+
+
+	ab+c  ====same as ====> ab{1,}c 
+
+	<Pattern>{n,m} minimum 'n' times maximum 'm' times
+	==============
+
+	ab{2,4}c ==> abbc abbbc abbbbc 
+
+	^[A-Z][0-9]{2,4}[a-z]$
+	      ..........
+
+##################################################################################################
+
+
+
+    Q1)	Write a shell script
+	--------------------
+	read a partition name from <STDIN>
+	test input partition is valid or not
+		   -------------------
+		  /dev/sda1 /dev/sda2 /dev/sda3 /dev/sda4
+
+		 /dev/sdb1  /dev/sdb2 /dev/sdb3 /dev/sdb4
+
+		 /dev/sdd1 /dev/sdd2 /dev/sdd3 /dev/sdd4
+	
+		    
+	Enter a partition name:/dev/sda1
+	Valid partition
+	if [ root ] -> A=(`fdisk -l |grep /dev/sda1`)
+		       |
+			A[0] -> A[-1]
+
+     Q2) How to filter line ends space 
+	 grep -n "[[:space:]]$" inputfile 
+			
+
+     Q3) Write a shell script
+	 ---------------------
+	 eidtest - function1
+         enametest - function2
+	 display - function3
+
+	 function call with arguments - return status code(0/1)
+	 
+         read a emp ID from <STDIN> - starts with A to E followed by any two digits - eidtest
+	
+	 read a emp name from <STDIN> - Title case - minimum 4 chars maximum 8chars - enametest 
+
+	 using display function -> print emp id,emp name.			
+
+
+
+ ##################################################################################################
+
+   operator =~
+   --------
+   |_match (or) bind (or) regx - like grep command logic 
+
+  [[   ]]
+
+
+  [[ "inputstring" =~ Pattern ]] ;echo $?
+		      (Regx)
+ 
+  if [[ inputstring =~ Pattern ]]
+  then
+		matched pattern block
+  else
+		not-matched 
+  fi
+  
+   
+   grep
+   ------
+	--->reading data from input file - line by line 	=> File Handling
+	    .......							
+	--> search the pattern from input			=> [[ inputstring =~ pattern ]]
+	    ..................
+
+	--> print the matched pattern line			=> using conditional (if only )
+	    -------------------------------
+
+
+ while read var
+ do
+	if [[ $var =~ pattern ]];then
+		echo $var
+	fi
+
+ done<inputfile
+ 
+	
+#######################################################################################
+root@krosum:~/SH# ps -e|grep -E "^[[:space:]]+[0-9]{2,3}"
+   10 ?        00:00:00 kdevtmpfs
+   11 ?        00:00:00 netns
+   12 ?        00:00:00 sync_supers
+   13 ?        00:00:00 bdi-default
+
+
+
+
+root@krosum:~/SH# ps -e|grep -E "^[[:space:]]+[0-9]{2,3}.*gnome"
+ 2702 ?        00:00:00 gnome-keyring-d
+ 2713 ?        00:00:05 gnome-session
+ 2776 ?        00:00:08 gnome-settings-
+ 2801 ?        00:00:03 gnome-fallback-
+ 2802 ?        00:00:03 polkit-gnome-au
+ 3004 ?        00:00:04 gnome-screensav
+ 3140 ?        00:00:38 gnome-terminal
+ 3167 ?        00:00:00 gnome-pty-helpe
+root@krosum:~/SH# ps -e|grep -oE "^[[:space:]]+[0-9]{2,3}.*gnome"
+ 2702 ?        00:00:00 gnome
+ 2713 ?        00:00:05 gnome
+ 2776 ?        00:00:08 gnome
+ 2801 ?        00:00:03 gnome
+ 2802 ?        00:00:03 polkit-gnome
+ 3004 ?        00:00:04 gnome
+ 3140 ?        00:00:38 gnome
+ 3167 ?        00:00:00 gnome
+root@krosum:~/SH# fdisk -l 
+
+Disk /dev/sda: 21.5 GB, 21474836480 bytes
+255 heads, 63 sectors/track, 2610 cylinders, total 41943040 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x000a56f7
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *        2048    39845887    19921920   83  Linux
+/dev/sda2        39847934    41940991     1046529    5  Extended
+/dev/sda5        39847936    41940991     1046528   82  Linux swap / Solaris
+root@krosum:~/SH# 
+root@krosum:~/SH# fdisk -l |grep "/dev/sda1"
+/dev/sda1   *        2048    39845887    19921920   83  Linux
+root@krosum:~/SH# 
+
+
+
+root@krosum:~/SH# ps -e|grep d$
+    2 ?        00:00:00 kthreadd
+   14 ?        00:00:00 kintegrityd
+   15 ?        00:00:00 kblockd
+   17 ?        00:00:00 khubd
+   18 ?        00:00:00 md
+   21 ?        00:00:00 khungtaskd
+   23 ?        00:00:00 ksmd
+   24 ?        00:00:00 khugepaged
+   35 ?        00:00:00 kthrotld
+  342 ?        00:00:00 udevd
+  411 ?        00:00:00 udevd
+  412 ?        00:00:00 udevd
+  497 ?        00:00:00 kpsmoused
+  740 ?        00:00:00 bluetoothd
+  741 ?        00:00:00 rsyslogd
+  754 ?        00:00:00 krfcommd
+  765 ?        00:00:00 cupsd
+  787 ?        00:00:00 polkitd
+  800 ?        00:00:00 colord
+ 1056 ?        00:00:00 acpid
+ 1057 ?        00:00:00 atd
+ 1099 ?        00:00:01 mysqld
+ 2147 ?        00:00:00 upowerd
+ 2702 ?        00:00:00 gnome-keyring-d
+ 2758 ?        00:00:00 gvfsd
+ 2809 ?        00:00:03 vmtoolsd
+ 2928 ?        00:00:00 indicator-sound
+ 3136 ?        00:00:00 unity-scope-vid
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# ps -e|grep -c d$
+28
+root@krosum:~/SH# if [ `ps -e|grep -c d$` -gt 50 ];then
+> echo "True"
+> else
+> echo "false"
+> fi
+false
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# ps -e|grep -c d$
+28
+root@krosum:~/SH# ps -e|grep -vc d$
+118
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# grep -n ^sales$ IP.txt 
+6:sales
+root@krosum:~/SH# 
+root@krosum:~/SH# echo "sales"|grep ^sales$
+sales
+root@krosum:~/SH# echo "sales other text sales"|grep ^sales$
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# grep -n " "$ IP.txt 
+5:sales 
+root@krosum:~/SH# ps -e|grep mysql
+ 1099 ?        00:00:01 mysqld
+root@krosum:~/SH# ps -e|grep crond
+root@krosum:~/SH# ps -e|grep cron
+ 1058 ?        00:00:00 cron
+root@krosum:~/SH# 
+root@krosum:~/SH# ps -e|grep -w mysql
+root@krosum:~/SH# 
+root@krosum:~/SH# ./p1 
+Enter a server name:AIX
+Matched(3)
+root@krosum:~/SH# ./p1 
+Enter a server name:ai
+NOT-Matched
+root@krosum:~/SH# ./p1 
+Enter a server name:aix
+Matched(3)
+root@krosum:~/SH# ./p1 
+Enter a server name:Aix
+Matched(3)
+root@krosum:~/SH# ./p1 
+Enter a server name:AiX
+Matched(3)
+root@krosum:~/SH# ./p1 
+Enter a server name:aIX
+Matched(3)
+root@krosum:~/SH# 
+
+
+
+
+
+root@krosum:~/SH# ps -e|grep pts/[0-9]
+ 3170 pts/0    00:00:00 bash
+ 3223 pts/0    00:00:00 su
+ 3231 pts/0    00:00:00 bash
+ 3287 pts/2    00:00:00 bash
+ 3340 pts/2    00:00:00 su
+ 3348 pts/2    00:00:00 bash
+ 3965 pts/3    00:00:00 bash
+ 4261 pts/2    00:00:00 ps
+ 4262 pts/2    00:00:00 grep
+root@krosum:~/SH# 
+root@krosum:~/SH# ps -e|grep pts/[1-9]
+ 3287 pts/2    00:00:00 bash
+ 3340 pts/2    00:00:00 su
+ 3348 pts/2    00:00:00 bash
+ 3965 pts/3    00:00:00 bash
+ 4265 pts/2    00:00:00 ps
+ 4266 pts/2    00:00:00 grep
+root@krosum:~/SH# grep -n "^[a-e].*[e-h]$" /etc/passwd
+2:daemon:x:1:1:daemon:/usr/sbin:/bin/sh
+3:bin:x:2:2:bin:/bin:/bin/sh
+14:backup:x:34:34:backup:/var/backups:/bin/sh
+21:colord:x:102:105:colord colour management daemon,,,:/var/lib/colord:/bin/false
+24:avahi-autoipd:x:105:112:Avahi autoip daemon,,,:/var/lib/avahi-autoipd:/bin/false
+25:avahi:x:106:113:Avahi mDNS daemon,,,:/var/run/avahi-daemon:/bin/false
+33:apelix:x:1000:1000:karthikeyan,,,:/home/apelix:/bin/bash
+root@krosum:~/SH# 
+root@krosum:~/SH# ps
+  PID TTY          TIME CMD
+ 3340 pts/2    00:00:00 su
+ 3348 pts/2    00:00:00 bash
+ 4300 pts/2    00:00:00 ps
+root@krosum:~/SH# ps|tr "a-z" "A-Z"
+  PID TTY          TIME CMD
+ 3340 PTS/2    00:00:00 SU
+ 3348 PTS/2    00:00:00 BASH
+ 4301 PTS/2    00:00:00 PS
+ 4302 PTS/2    00:00:00 BASH
+root@krosum:~/SH# ps|tr "a-z" "A-Z"|awk '{print $NF}' >IP1
+root@krosum:~/SH# 
+
+
+
+
+
+
+
+
+
+
+
+root@krosum:~/SH# cat IP1
+CMD
+SU
+BASH
+PS
+TR
+BASH
+root@krosum:~/SH# vi IP1
+root@krosum:~/SH# 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+root@krosum:~/SH# cat -n IP1
+     1	CMD
+     2	SU
+     3	BASH
+     4	PS
+     5	TR
+     6	BASH
+     7	linux
+     8	unix
+     9	12345
+    10	!#!#%$^^&#
+    11	Unix5 Server
+root@krosum:~/SH# grep -n "[A-Z]" IP1
+1:CMD
+2:SU
+3:BASH
+4:PS
+5:TR
+6:BASH
+11:Unix5 Server
+root@krosum:~/SH# grep -n [[:upper:]] IP1
+1:CMD
+2:SU
+3:BASH
+4:PS
+5:TR
+6:BASH
+11:Unix5 Server
+root@krosum:~/SH# grep -n [[:upper:]][a-z] IP1
+11:Unix5 Server
+root@krosum:~/SH# grep -n [A-Z][a-z] IP1
+11:Unix5 Server
+root@krosum:~/SH# grep -n [[:upper:]][[:lower:]] IP1
+11:Unix5 Server
+root@krosum:~/SH# grep -n [[:digits:]] IP1
+grep: Invalid character class name
+root@krosum:~/SH# grep -n [[:digit:]] IP1
+9:12345
+11:Unix5 Server
+root@krosum:~/SH# chmod +x p2
+root@krosum:~/SH# 
+root@krosum:~/SH# ./p2 
+Enter any two digits:123
+123
+root@krosum:~/SH# ./p2 
+Enter any two digits:1
+1
+root@krosum:~/SH# ./p2 
+Enter any two digits:abc
+abc
+root@krosum:~/SH# ./p2 
+Enter any two digits:asdf@##@$@$@
+asdf@##@$@$@
+root@krosum:~/SH# ./p2 
+Enter any two digits:123 
+root@krosum:~/SH# ./p2 
+Enter any two digits:1
+root@krosum:~/SH# ./p2 
+Enter any two digits:abc
+root@krosum:~/SH# ./p2 
+Enter any two digits:!@#@!#!@#!@3433
+root@krosum:~/SH# ./p2 
+Enter any two digits:45
+45
+root@krosum:~/SH# 
+root@krosum:~/SH# ./p2 
+Enter any two digits:56
+Enter a name:Arun
+Usage:invalid name format
+root@krosum:~/SH# ./p2 
+Enter any two digits:345
+Usage:invalid format
+root@krosum:~/SH# ./p2 
+Enter any two digits:23
+Enter a name:Vija
+Usage:invalid name format
+root@krosum:~/SH# ./p2 
+Enter any two digits:33
+Enter a name:Vijay
+Number:33	 Name:Vijay
+root@krosum:~/SH# ./p2 
+Enter any two digits:44
+Enter a name:VIJAY
+Usage:invalid name format
+root@krosum:~/SH# ./p2 
+Enter any two digits:44
+Enter a name:vijay
+Usage:invalid name format
+root@krosum:~/SH# 
+root@krosum:~/SH# ./p2 
+Enter any two digits:44
+Enter a name:Vijaya
+Usage:invalid name format
+root@krosum:~/SH# 
+root@krosum:~/SH# grep sales emp.csv 
+304,arun,sales,pune,10340
+452,ram,sales,bglore,3524
+294,zion,sales,pune,49050
+root@krosum:~/SH# 
+root@krosum:~/SH# grep -q sales emp.csv 
+root@krosum:~/SH# 
+root@krosum:~/SH# echo $?
+0
+root@krosum:~/SH# grep QA emp.csv 
+root@krosum:~/SH# 
+root@krosum:~/SH# echo $?
+1
+root@krosum:~/SH# grep -v sales emp.csv 
+302,vijay,prod,chennai,24901
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+842,arun,prod,pune,49040
+245,kumar,prod,bglore,49504
+root@krosum:~/SH# 
+
+
+
+
+root@krosum:~/SH# grep ^sales IP.txt 
+sales,vijay
+sales,
+sales 
+sales
+root@krosum:~/SH# grep [[:space:]]$ IP.txt 
+sales 
+root@krosum:~/SH# 
+root@krosum:~/SH# grep -E "^sales|[[:space:]]$" IP.txt 
+sales,vijay
+sales,
+sales 
+sales
+root@krosum:~/SH# grep -nE "^sales|[[:space:]]$" IP.txt 
+2:sales,vijay
+3:sales,
+5:sales 
+6:sales
+root@krosum:~/SH# grep -nE "^sales|[[:space:]]$|^[0-9]" IP.txt 
+1:101,ram,sales,pune
+2:sales,vijay
+3:sales,
+5:sales 
+6:sales
+root@krosum:~/SH# 
+root@krosum:~/SH# ./p4 
+Enter any two digits:Arun
+Usage:invalid format
+root@krosum:~/SH# ./p4 
+Enter any two digits:Arun
+Usage:invalid format
+root@krosum:~/SH# 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+root@krosum:~/SH# ./p4 
+Enter a name:Arun
+Number:	 Name:Arun
+root@krosum:~/SH# 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+root@krosum:~/SH# ./p4 
+Enter a name:Arun
+Name:Arun
+root@krosum:~/SH# ./p4 
+Enter a name:Kasdssddssddsdafsdfsdfsassfsd
+Name:Kasdssddssddsdafsdfsdfsassfsd
+root@krosum:~/SH# 
+root@krosum:~/SH# ./p4 
+Enter a name:Ssdfsdfsdfsdfsd
+Name:Ssdfsdfsdfsdfsd
+root@krosum:~/SH# 
+root@krosum:~/SH# ./p4 
+Enter a name:Ssfsdfsd,sdfsdfsdsd
+Usage:invalid name format
+root@krosum:~/SH# ./p4 
+Enter a name:Adsfdsdf343dfd
+Usage:invalid name format
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# echo "Arun"|grep -E "^[A-Z][a-z]+$"
+Arun
+root@krosum:~/SH# echo "Arun5"|grep -E "^[A-Z][a-z]+$"
+root@krosum:~/SH# 
+root@krosum:~/SH# echo "Arun5"|grep -E "^[A-Z][a-z]+"
+Arun5
+root@krosum:~/SH# echo "Arun5kumar"|grep -E "^[A-Z][a-z]+"
+Arun5kumar
+root@krosum:~/SH# echo $?
+0
+root@krosum:~/SH# echo "Arun5kumar"|grep -E "^[A-Z][a-z]+$"
+root@krosum:~/SH# 
+root@krosum:~/SH# echo "ARUN"|grep -E "^[A-Z][a-z]+$"
+root@krosum:~/SH# 
+root@krosum:~/SH# echo "arun"|grep -E "^[A-Z][a-z]+$"
+root@krosum:~/SH# 
+root@krosum:~/SH# echo "Arun"|grep -E "^[A-Z][a-z]+$"
+Arun
+root@krosum:~/SH# echo "Arun kumar"|grep -E "^[A-Z][a-z]+$"
+root@krosum:~/SH# 
+root@krosum:~/SH# echo "Arun kumar"|grep -E "^[A-Z][a-z" "]+$"
+grep: Unmatched [ or [^
+root@krosum:~/SH# echo "Arun kumar"|grep -E "^[A-Z]([[:space:]][a-z])+$"
+root@krosum:~/SH# 
+root@krosum:~/SH# echo "Arun kumar"|grep -E "^[A-Z]([[:space:]]|[a-z])+$"
+Arun kumar
+root@krosum:~/SH# echo "Arunkumar"|grep -E "^[A-Z]([[:space:]]|[a-z])+$"
+Arunkumar
+root@krosum:~/SH# 
+root@krosum:~/SH# fdisk -l
+
+Disk /dev/sda: 21.5 GB, 21474836480 bytes
+255 heads, 63 sectors/track, 2610 cylinders, total 41943040 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x000a56f7
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *        2048    39845887    19921920   83  Linux
+/dev/sda2        39847934    41940991     1046529    5  Extended
+/dev/sda5        39847936    41940991     1046528   82  Linux swap / Solaris
+root@krosum:~/SH# fdisk -l /dev/sda1
+
+Disk /dev/sda1: 20.4 GB, 20400046080 bytes
+255 heads, 63 sectors/track, 2480 cylinders, total 39843840 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+Disk /dev/sda1 doesn't contain a valid partition table
+root@krosum:~/SH# 
+root@krosum:~/SH# fdisk -l |grep /dev/sda1
+/dev/sda1   *        2048    39845887    19921920   83  Linux
+root@krosum:~/SH# 
+root@krosum:~/SH# A=(`fdisk -l |grep /dev/sda1`)
+root@krosum:~/SH# echo ${A[0]}
+/dev/sda1
+root@krosum:~/SH# echo ${A[-1]}
+Linux
+root@krosum:~/SH# 
+
+###################################################################################################
+
+Q1. grep -vn ^$  inputfile  - using =~ demonstrate grep command.
+c=0
+while read var
+do
+	c=`expr $c + 1`
+	if [[ $var =~ ^$ ]];then
+		continue
+	else
+		echo "$c: $var"
+	fi
+	
+done<process.log
+
+Q2. Write a shell script 
+    read a emp.csv file from commandline 
+    display employee name and working department to monitor
+    calculate sum of emp's cost 
+    display total emp's cost at the bottom line 
+    # name=`cut -d, -f 2`
+    # dept=`cut -d, -f 3`
+    Sample emp.csv file
+    ---------------------
+     101,arun,sales,pune,1000
+     102,leo,prod,bglore,2000
+     103,xerox,admin,hyd,3000
+  
+    Expected result:-
+   -------------------
+    Emp name: arun  working dept:sales
+    Emp name: leo   working dept:prod
+    Emp name: xerox working dept:admin
+    ....
+    -------------------------------------
+    Total Emp's cost:6000
+   -------------------------------------
+
+   if [ $# -ne 1 -o "`basename $0`" == "$1" ];then
+	echo "Usage:Commandline argument Error"
+	exit
+   fi
+  
+   cost=0
+   while read var
+   do
+	name=`echo $var|cut -d, -f 2`
+	dept=`echo $var|cut -d, -f 3`
+	cost=`echo $var|cut -d, -f 5`
+	echo -e "Emp name:$name \t Working department:$dept"
+	total=`expr $total + $cost`
+   done<$1
+   echo "--------------------------------------------------"
+   echo -e "\t *** Total Emp Cost:$total ***\t"
+   echo "--------------------------------------------------"
+   
+	
+Q3. Input file
+    ----------
+    uptime
+    fdisk -l
+    ps -f
+    df -Th
+    lsblk
+    ------------
+
+    |___ step 1: read a above input file 
+	 step 2: execute system command ( ignore following commands - fdisk -l, lsblk)
+	 step 3: write command result to new external file
+	 step 4: using gzip compress external file
+	 
+
+ if [ $# -ne 2 ];then
+	echo "Usage: Commandline argument Error"
+	exit
+ fi
+
+ if ! [ -f $1 ];then
+	echo "Usage:Sorry $1 file is not a reg.file"
+	exit
+ fi
+
+ if [ -e $2 ];then
+	echo "Usage:Sorry $2 file is already exists"
+	exit
+ fi
+
+  
+ while read var
+ do
+      if [ "$var" == "fdisk -l" -o "$var" == "lsblk" ];then
+		continue
+      else
+		$var
+      fi
+ done<$1 >$2.log
+
+ gzip $2.log
+ if [ $? -ne 0 ];then
+    echo "Usage:gzip operation is failed"
+    exit
+ fi
+
+
+#########################################################################################################
+
+ recap grep
+ -------------
+  command line syntax:-
+  ----------------------
+  grep -option	pattern  inputfile
+
+  pattern -> string(or)text
+
+  Action (or) operation -> print
+ 
+ ==================================================================
+  
+  sed commandline syntax:-
+  ------------------------
+
+  sed -option 'pattern Action' inputfile
+
+  pattern
+  ========
+     1.Line number (or) Addressing ==> sed -option 'NAction' inputfile
+     2./Text/(or)/string/ ===========> sed -option '/Pattern/Action' inputfile 
+
+  Action (or) operations
+  -----------------------
+  print(p)  delete(d)	   insert(i)  change(c)
+  write(w)  substitute(s)  append(a)  execute(e)
+
+  ==================================================================
+  
+  read data from input(FILE,PIPE) - line by line
+  stores all the input data to buffer(Pattern buffer)
+  execute sed command(action) on the buffer(pattern buffer)
+  display executed result to monitor - after display result to monitor buffer will be empty
+  again repeat step1(read data from file ).... 
+
+
+
+
+
+root@krosum:~/SH# cat -n emp.csv 
+     1	304,arun,sales,pune,10340
+     2	302,vijay,prod,chennai,24901
+     3	452,ram,sales,bglore,3524
+     4	489,anu,hr,hyderabad,35599
+     5	932,bibu,HR,mumbai,94524
+     6	294,zion,sales,pune,49050
+     7	842,arun,prod,pune,49040
+     8	245,kumar,prod,bglore,49504
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n '3p' emp.csv 
+452,ram,sales,bglore,3524
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n '/sales/p' emp.csv 
+304,arun,sales,pune,10340
+452,ram,sales,bglore,3524
+294,zion,sales,pune,49050
+root@krosum:~/SH# 
+root@krosum:~/SH# # 3 - pattern - linenumber
+root@krosum:~/SH# # -----------------------------
+root@krosum:~/SH# # /sales/ - pattern -- text pattern
+root@krosum:~/SH# # ----------------------------------
+root@krosum:~/SH# #
+
+ 
+
+ sed options
+ -------------
+
+  -n (p;w) - print/write action
+
+  -e  (like grep -e pattern1 -e patter2 .. -e patternN)
+
+  -f ( like grep -f patternfile inputfile )
+
+  -r ( like grep -E  ERE)
+  
+   
+
+   1.Line number (or) Addressing
+   -------------------------------
+
+   pattern - line number
+  
+   sed -option 'Pattern(Linenumber)Action'  inputfile (or) PIPE
+
+    print action
+    -------------
+    sed -n 'NAction' inputfile 
+	    |
+	   Nth line Action
+    
+
+root@krosum:~/SH# sed  -n '3p' emp.csv 
+452,ram,sales,bglore,3524
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n '3p' /etc/passwd
+bin:x:2:2:bin:/bin:/bin/sh
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n '3p' emp.csv 
+452,ram,sales,bglore,3524
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n '3p' /var/log/boot.log 
+modem-manager[739]: <info>  ModemManager (version 0.5.2.0) starting...
+root@krosum:~/SH# 
+root@krosum:~/SH# ps|sed -n '3p'
+ 3231 pts/0    00:00:02 bash
+root@krosum:~/SH# 
+root@krosum:~/SH# df -Th|sed -n '3p'
+udev           devtmpfs  494M  4.0K  494M   1% /dev
+root@krosum:~/SH# cat -n emp.csv 
+     1	304,arun,sales,pune,10340
+     2	302,vijay,prod,chennai,24901
+     3	452,ram,sales,bglore,3524
+     4	489,anu,hr,hyderabad,35599
+     5	932,bibu,HR,mumbai,94524
+     6	294,zion,sales,pune,49050
+     7	842,arun,prod,pune,49040
+     8	245,kumar,prod,bglore,49504
+
+
+    sed -n 'N,MAction' inputfile
+
+	   from Nth line to Mth line
+	   --------------------------//like range(start-end)
+
+	
+
+
+
+root@krosum:~/SH# sed -n '3,7p' emp.csv 
+452,ram,sales,bglore,3524
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+294,zion,sales,pune,49050
+842,arun,prod,pune,49040
+root@krosum:~/SH# ps -e|sed -n '3,7p'
+    2 ?        00:00:00 kthreadd
+    3 ?        00:00:00 ksoftirqd/0
+    5 ?        00:00:01 kworker/u:0
+    6 ?        00:00:00 migration/0
+    7 ?        00:00:00 watchdog/0
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n -e '3p' -e '7p' emp.csv 
+452,ram,sales,bglore,3524
+842,arun,prod,pune,49040
+root@krosum:~/SH# 
+root@krosum:~/SH# ps -e|sed -n -e '3p' -e '7p'
+    2 ?        00:00:00 kthreadd
+    7 ?        00:00:00 watchdog/0
+root@krosum:~/SH# 
+
+
+    sed -n 'N~MAction' inputfile
+
+	   from Nth line + Mth line=r1
+		r1+Mth line=r2
+		r2+Mth line=r3
+		r3+Mth ....
+		
+	
+  sed -n '1~2p' input ->print all the odd number(1,3,5,7,9,11,13...N)
+          |
+
+	 print 1st line = 1+2 =>3
+	 print 3rd line = 3+2 =>5
+	 print 5th line = 5+2 =>7
+	 print 7th line = 7+2 =>9
+	  
+	 
+  sed -n '1~5p' input 
+
+	   1st line 1+5=6
+	   6th line 6+5=11
+	   11th line 11+5=16
+	   
+
+  sed -n '2~2p' input ->print all the even line number(2 4 6 8 10 12 14 16 ..)
+
+
+ root@krosum:~/SH# cat -n emp.csv 
+     1	304,arun,sales,pune,10340
+     2	302,vijay,prod,chennai,24901
+     3	452,ram,sales,bglore,3524
+     4	489,anu,hr,hyderabad,35599
+     5	932,bibu,HR,mumbai,94524
+     6	294,zion,sales,pune,49050
+     7	842,arun,prod,pune,49040
+     8	245,kumar,prod,bglore,49504
+root@krosum:~/SH# 
+root@krosum:~/SH# cat -n emp.csv |sed -n '1~2p'
+     1	304,arun,sales,pune,10340
+     3	452,ram,sales,bglore,3524
+     5	932,bibu,HR,mumbai,94524
+     7	842,arun,prod,pune,49040
+root@krosum:~/SH# cat -n emp.csv |sed -n '2~2p'
+     2	302,vijay,prod,chennai,24901
+     4	489,anu,hr,hyderabad,35599
+     6	294,zion,sales,pune,49050
+     8	245,kumar,prod,bglore,49504
+root@krosum:~/SH# cat -n emp.csv |sed -n '1~4p'
+     1	304,arun,sales,pune,10340
+     5	932,bibu,HR,mumbai,94524
+root@krosum:~/SH# cat -n /etc/passwd|sed -n '2~5p'
+     2	daemon:x:1:1:daemon:/usr/sbin:/bin/sh
+     7	man:x:6:12:man:/var/cache/man:/bin/sh
+    12	proxy:x:13:13:proxy:/bin:/bin/sh
+    17	gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/bin/sh
+    22	messagebus:x:103:107::/var/run/dbus:/bin/false
+    27	kernoops:x:108:65534:Kernel Oops Tracking Daemon,,,:/:/bin/false
+    32	saned:x:113:123::/home/saned:/bin/false
+
+
+  recap
+  ------
+	sed -n '3p' input
+
+	sed -n '3,5p' input
+
+	sed -n -e '3p' -e '5p' input
+
+	sed -n '3~5p' input ->3rd line ->3+5=8thline 8+5=13th line .... +5
+
+  
+  write(w) 
+  ---------
+   sed -n '3p' emp.csv >result.log
+
+   sed -n '3w<space>result.log' emp.csv 
+		    ^^^^^^^^^^
+		     must be
+		     new file
+
+   
+
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n '3w three.log' emp.csv 
+root@krosum:~/SH# 
+root@krosum:~/SH# cat three.log 
+452,ram,sales,bglore,3524
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n '3,5 r1.log' emp.csv 
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n '3,5w r1.log' emp.csv 
+root@krosum:~/SH# 
+root@krosum:~/SH# cat r1.log 
+452,ram,sales,bglore,3524
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n -e '3w r2.log' -e '5w r3.log' emp.csv 
+root@krosum:~/SH# 
+root@krosum:~/SH# cat r2.log 
+452,ram,sales,bglore,3524
+root@krosum:~/SH# cat r3.log 
+932,bibu,HR,mumbai,94524
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n '1~2w oddlines.log' emp.csv 
+root@krosum:~/SH# 
+root@krosum:~/SH# cat oddlines.log 
+304,arun,sales,pune,10340
+452,ram,sales,bglore,3524
+932,bibu,HR,mumbai,94524
+842,arun,prod,pune,49040
+
+ 
+################################################################################################
+
+ delete(d) -> opp.print action is delete action
+ ---------
+ 	sed  '3d' input
+
+	sed   '3,5d' input
+
+	sed   -e '3d' -e '5d' input
+
+  	sed   '3~5d' input ->3rd line ->3+5=8thline 8+5=13th line .... +5
+ 
+ $ - last line number
+
+ sed -n '$p' -> print (action) last line content
+ 
+ sed -n '$w end.log' ->write last line content to end.log file
+
+ sed '$d' ->delete last line content
+  
+
+################################################################################################
+
+ insert(i) append(a)
+
+
+ sed '3i -----------'  -->insert new text at 3rd line (existing 3rdline data move to 4th line)
+
+ sed '3a -----------'  -->insert new text at 4th line(3 after )
+
+ 
+ 
+root@krosum:~/SH# cat -n r1.log 
+     1	452,ram,sales,bglore,3524
+     2	489,anu,hr,hyderabad,35599
+     3	932,bibu,HR,mumbai,94524
+root@krosum:~/SH# 
+root@krosum:~/SH# sed '2i NEW TEXT' r1.log 
+452,ram,sales,bglore,3524
+NEW TEXT
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+root@krosum:~/SH# 
+root@krosum:~/SH# cat -n r1.log 
+     1	452,ram,sales,bglore,3524
+     2	489,anu,hr,hyderabad,35599
+     3	932,bibu,HR,mumbai,94524
+root@krosum:~/SH# 
+root@krosum:~/SH# sed '2a NEW TEXT' r1.log 
+452,ram,sales,bglore,3524
+489,anu,hr,hyderabad,35599
+NEW TEXT
+932,bibu,HR,mumbai,94524
+root@krosum:~/SH# ps|sed -e '1i ----------------------------' -e '1a ---------------------------------'
+----------------------------
+  PID TTY          TIME CMD
+---------------------------------
+ 3223 pts/0    00:00:00 su
+ 3231 pts/0    00:00:02 bash
+ 7813 pts/0    00:00:00 ps
+ 7814 pts/0    00:00:00 sed
+root@krosum:~/SH# 
+
+
+root@krosum:~/SH# sed '1~2i ---------------------------------' emp.csv 
+---------------------------------
+304,arun,sales,pune,10340
+302,vijay,prod,chennai,24901
+---------------------------------
+452,ram,sales,bglore,3524
+489,anu,hr,hyderabad,35599
+---------------------------------
+932,bibu,HR,mumbai,94524
+294,zion,sales,pune,49050
+---------------------------------
+842,arun,prod,pune,49040
+245,kumar,prod,bglore,49504
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# sed '1~2a ---------------------------------' emp.csv 
+304,arun,sales,pune,10340
+---------------------------------
+302,vijay,prod,chennai,24901
+452,ram,sales,bglore,3524
+---------------------------------
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+---------------------------------
+294,zion,sales,pune,49050
+842,arun,prod,pune,49040
+---------------------------------
+245,kumar,prod,bglore,49504
+
+#################################################################################################
+
+ root@krosum:~/SH# cat -n r1.log 
+     1	452,ram,sales,bglore,3524
+     2	489,anu,hr,hyderabad,35599
+     3	932,bibu,HR,mumbai,94524
+root@krosum:~/SH# 
+root@krosum:~/SH# sed '2i ********************' r1.log 
+452,ram,sales,bglore,3524
+********************
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+root@krosum:~/SH# 
+root@krosum:~/SH# sed '2a ********************' r1.log 
+452,ram,sales,bglore,3524
+489,anu,hr,hyderabad,35599
+********************
+932,bibu,HR,mumbai,94524
+root@krosum:~/SH# 
+root@krosum:~/SH# sed '2c ********************' r1.log 
+452,ram,sales,bglore,3524
+********************
+932,bibu,HR,mumbai,94524
+root@krosum:~/SH# sed '3,7c ------------------' emp.csv 
+304,arun,sales,pune,10340
+302,vijay,prod,chennai,24901
+------------------
+245,kumar,prod,bglore,49504
+root@krosum:~/SH# 
+###################################################################################################
+
+
+root@krosum:~/SH# cat INPUTFILE 
+uptime
+fdisk -l
+ps -f
+df -Th
+lsblk 
+root@krosum:~/SH# sed 'e' INPUTFILE 
+ 15:56:24 up  6:52,  3 users,  load average: 0.88, 0.51, 0.53
+
+Disk /dev/sda: 21.5 GB, 21474836480 bytes
+255 heads, 63 sectors/track, 2610 cylinders, total 41943040 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x000a56f7
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *        2048    39845887    19921920   83  Linux
+/dev/sda2        39847934    41940991     1046529    5  Extended
+/dev/sda5        39847936    41940991     1046528   82  Linux swap / Solaris
+UID        PID  PPID  C STIME TTY          TIME CMD
+root      3223  3170  0 09:30 pts/0    00:00:00 su -
+root      3231  3223  0 09:30 pts/0    00:00:02 -su
+root      7906  3231  0 15:56 pts/0    00:00:00 sed e INPUTFILE
+root      7911  7906  0 15:56 pts/0    00:00:00 sh -c ps -f
+root      7912  7911  0 15:56 pts/0    00:00:00 ps -f
+Filesystem     Type      Size  Used Avail Use% Mounted on
+/dev/sda1      ext4       19G  5.4G   13G  30% /
+udev           devtmpfs  494M  4.0K  494M   1% /dev
+tmpfs          tmpfs     201M  796K  200M   1% /run
+none           tmpfs     5.0M     0  5.0M   0% /run/lock
+none           tmpfs     501M  184K  501M   1% /run/shm
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+sr0     11:0    1  1024M  0 rom  
+sda      8:0    0    20G  0 disk 
++-sda1   8:1    0    19G  0 part /
++-sda2   8:2    0     1K  0 part 
++-sda5   8:5    0  1022M  0 part [SWAP]
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -e 'e' INPUTFILE  -ne 'w result.log'
+root@krosum:~/SH# cat result.log 
+ 15:56:56 up  6:53,  3 users,  load average: 1.23, 0.67, 0.58
+
+Disk /dev/sda: 21.5 GB, 21474836480 bytes
+255 heads, 63 sectors/track, 2610 cylinders, total 41943040 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x000a56f7
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *        2048    39845887    19921920   83  Linux
+/dev/sda2        39847934    41940991     1046529    5  Extended
+/dev/sda5        39847936    41940991     1046528   82  Linux swap / Solaris
+UID        PID  PPID  C STIME TTY          TIME CMD
+root      3223  3170  0 09:30 pts/0    00:00:00 su -
+root      3231  3223  0 09:30 pts/0    00:00:02 -su
+root      7919  3231  0 15:56 pts/0    00:00:00 sed -e e INPUTFILE -ne w result.log
+root      7924  7919  0 15:56 pts/0    00:00:00 sh -c ps -f
+root      7925  7924  0 15:56 pts/0    00:00:00 ps -f
+Filesystem     Type      Size  Used Avail Use% Mounted on
+/dev/sda1      ext4       19G  5.4G   13G  30% /
+udev           devtmpfs  494M  4.0K  494M   1% /dev
+tmpfs          tmpfs     201M  796K  200M   1% /run
+none           tmpfs     5.0M     0  5.0M   0% /run/lock
+none           tmpfs     501M  184K  501M   1% /run/shm
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+sr0     11:0    1  1024M  0 rom  
+sda      8:0    0    20G  0 disk 
++-sda1   8:1    0    19G  0 part /
++-sda2   8:2    0     1K  0 part 
++-sda5   8:5    0  1022M  0 part [SWAP]
+
+##########################################################################################################
+
+  N(linenumber) ---> /Text/ 
+
+ sed -option '/Pattern/Action' inputfile
+               (regx)
+
+ 
+  print sales emp details from emp.csvfile
+  ----- =====
+	
+	sed -n '/sales/p' emp.csv 
+
+   print 3rd line content from emp.csv file
+   ----- =
+
+	sed -n '3p' emp.csv 	
+  
+
+   sed -n '/^sales/p' emp.csv 
+	    .....
+
+   delete sales emp details from emp.csv file
+   ------ =====
+
+    sed '/sales/d' emp.csv -->grep -v sales emp.csv 
+
+
+   delete 3rd line content from emp.csv file
+   ------ =
+
+    sed '3d' emp.csv 
+           
+    How to delete empty lines ?
+    =============================
+     sed '/^$/d' process.log
+
+
+    How to print empty line?
+    sed -n '/^$/p' process.log
+
+     
+   How to write sales emp details 
+    --------------------------
+
+    sed -n '/sales/w s1.txt' emp.csv ----> grep sales emp.csv >s1.txt
+				      |__  sed -n '/sales/p' emp.csv >s1.txt
+
+
+
+
+
+
+  root@krosum:~/SH# cat -n emp.csv 
+     1	304,arun,sales,pune,10340
+     2	302,vijay,prod,chennai,24901
+     3	452,ram,sales,bglore,3524
+     4	489,anu,hr,hyderabad,35599
+     5	932,bibu,HR,mumbai,94524
+     6	294,zion,sales,pune,49050
+     7	842,arun,prod,pune,49040
+     8	245,kumar,prod,bglore,49504
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n '2,5p' emp.csv 
+302,vijay,prod,chennai,24901
+452,ram,sales,bglore,3524
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n '/vijay/,/zion/p' emp.csv 
+302,vijay,prod,chennai,24901
+452,ram,sales,bglore,3524
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+294,zion,sales,pune,49050
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n '/vijay/,/zion/w r1.log' emp.csv 
+root@krosum:~/SH# 
+root@krosum:~/SH# cat r1.log 
+302,vijay,prod,chennai,24901
+452,ram,sales,bglore,3524
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+294,zion,sales,pune,49050
+root@krosum:~/SH# sed '/vijay/,/zion/d' emp.csv 
+304,arun,sales,pune,10340
+842,arun,prod,pune,49040
+245,kumar,prod,bglore,49504
+root@krosum:~/SH# sed '/vijay/,/zion/i ---------------------' emp.csv 
+304,arun,sales,pune,10340
+---------------------
+302,vijay,prod,chennai,24901
+---------------------
+452,ram,sales,bglore,3524
+---------------------
+489,anu,hr,hyderabad,35599
+---------------------
+932,bibu,HR,mumbai,94524
+---------------------
+294,zion,sales,pune,49050
+842,arun,prod,pune,49040
+245,kumar,prod,bglore,49504
+root@krosum:~/SH# sed '/vijay/,/zion/c ---------------------' emp.csv 
+304,arun,sales,pune,10340
+---------------------
+842,arun,prod,pune,49040
+245,kumar,prod,bglore,49504
+
+
+
+
+sed -n '/^Jun.25.09:17:[0-9][0-9]/,/^Jun.25.11:.*/w r2.log' /var/log/auth.log
+
+ 
+#######################################################################################
+
+ sed -option '/pattern/Action' inputfile
+	               pwdiac - sed commands
+
+ 
+ substitute(s)
+ --------------
+
+ sed  's/oldpattern/replacedstring/' inputfile
+ ----  | ( Regx )   (string/text)   
+       |
+    substitute command(s)
+
+  substitute(s) action -> returns string
+				  -------
+				    |__input file string(original string)
+				   |
+				   |____replaced string (if oldpattern is matched )
+  
+
+  
+
+
+ space --> [[:space:]] (or) \s 
+
+
+   sed -e 's/\s+//'  ...
+
+#####################################################################################################
+root@krosum:~/SH# cat -n emp.csv 
+     1	304,arun,sales,pune,10340
+     2	302,vijay,prod,chennai,24901
+     3	452,ram,sales,bglore,3524
+     4	489,anu,hr,hyderabad,35599
+     5	932,bibu,HR,mumbai,94524
+     6	294,zion,sales,pune,49050
+     7	842,arun,prod,pune,49040
+     8	245,kumar,prod,bglore,49504
+root@krosum:~/SH# 
+root@krosum:~/SH# sed 's/sales/****/' emp.csv 
+304,arun,****,pune,10340
+302,vijay,prod,chennai,24901
+452,ram,****,bglore,3524
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+294,zion,****,pune,49050
+842,arun,prod,pune,49040
+245,kumar,prod,bglore,49504
+root@krosum:~/SH# sed '/sales/c *****/' emp.csv 
+*****/
+302,vijay,prod,chennai,24901
+*****/
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+*****/
+842,arun,prod,pune,49040
+245,kumar,prod,bglore,49504
+root@krosum:~/SH# 
+root@krosum:~/SH# sed 's/sales/***/' emp.csv 
+304,arun,***,pune,10340
+302,vijay,prod,chennai,24901
+452,ram,***,bglore,3524
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+294,zion,***,pune,49050
+842,arun,prod,pune,49040
+245,kumar,prod,bglore,49504
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n 's/sales/***/p' emp.csv 
+304,arun,***,pune,10340
+452,ram,***,bglore,3524
+294,zion,***,pune,49050
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n 's/sales/***/w s1.txt' emp.csv 
+root@krosum:~/SH# 
+root@krosum:~/SH# cat s1.txt 
+304,arun,***,pune,10340
+452,ram,***,bglore,3524
+294,zion,***,pune,49050
+root@krosum:~/SH# sed -e 's/sales/*****/' -e '/prod/####/' emp.csv 
+sed: -e expression #2, char 7: comments don't accept any addresses
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -e 's/sales/*****/' -e 's/prod/####/' emp.csv 
+304,arun,*****,pune,10340
+302,vijay,####,chennai,24901
+452,ram,*****,bglore,3524
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+294,zion,*****,pune,49050
+842,arun,####,pune,49040
+245,kumar,####,bglore,49504
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# sed 's/^[1-3].*/-----------/' emp.csv 
+-----------
+-----------
+452,ram,sales,bglore,3524
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+-----------
+842,arun,prod,pune,49040
+-----------
+root@krosum:~/SH# sed 's/^[1-3]/-----------/' emp.csv 
+-----------04,arun,sales,pune,10340
+-----------02,vijay,prod,chennai,24901
+452,ram,sales,bglore,3524
+489,anu,hr,hyderabad,35599
+932,bibu,HR,mumbai,94524
+-----------94,zion,sales,pune,49050
+842,arun,prod,pune,49040
+-----------45,kumar,prod,bglore,49504
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# ps|sed 's/bash/ksh/'
+  PID TTY          TIME CMD
+ 3223 pts/0    00:00:00 su
+ 3231 pts/0    00:00:03 ksh
+ 8249 pts/0    00:00:00 ps
+ 8250 pts/0    00:00:00 sed
+root@krosum:~/SH# 
+root@krosum:~/SH# echo "ram,sales,sales,sales"|sed 's/sales/***/'
+ram,***,sales,sales
+root@krosum:~/SH# echo "ram,sales,sales,sales"|sed 's/sales/***/g'
+ram,***,***,***
+root@krosum:~/SH# echo "ram,SALES,Sales,sales,sales"|sed 's/sales/****/'
+ram,SALES,Sales,****,sales
+root@krosum:~/SH# echo "ram,SALES,Sales,sales,sales"|sed 's/sales/****/i'
+ram,****,Sales,sales,sales
+root@krosum:~/SH# echo "ram,SALES,Sales,sales,sales"|sed 's/sales/****/ig'
+ram,****,****,****,****
+root@krosum:~/SH# echo "ram,SALES,Sales,sales,sales"|sed 's/sales/****/gi'
+ram,****,****,****,****
+root@krosum:~/SH# uptime
+ 16:27:29 up  7:24,  3 users,  load average: 1.14, 0.92, 0.77
+root@krosum:~/SH# 
+root@krosum:~/SH# uptime|sed 's/[[:space:]]/-/'
+-16:27:48 up  7:24,  3 users,  load average: 0.81, 0.86, 0.75
+root@krosum:~/SH# 
+root@krosum:~/SH# uptime|sed 's/[[:space:]]/-/g'
+-16:28:00-up--7:24,--3-users,--load-average:-0.69,-0.83,-0.74
+root@krosum:~/SH# 
+root@krosum:~/SH# uptime|sed 's/\s/-/g'
+-16:28:15-up--7:24,--3-users,--load-average:-0.54,-0.79,-0.73
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n 's/sales/*****/p' emp.csv 
+304,arun,*****,pune,10340
+452,ram,*****,bglore,3524
+294,zion,*****,pune,49050
+root@krosum:~/SH# 
+root@krosum:~/SH# sed -n 's/sales//p' emp.csv 
+304,arun,,pune,10340
+452,ram,,bglore,3524
+294,zion,,pune,49050
+root@krosum:~/SH# sed -n 's/sales.//p' emp.csv 
+304,arun,pune,10340
+452,ram,bglore,3524
+294,zion,pune,49050
+root@krosum:~/SH# uptime|sed 's/\s//g'
+16:29:47up7:26,3users,loadaverage:1.83,1.17,0.87
+root@krosum:~/SH# 
+root@krosum:~/SH# uptime
+ 16:29:59 up  7:26,  3 users,  load average: 1.55, 1.13, 0.86
+root@krosum:~/SH# 
+root@krosum:~/SH# uptime|sed 's/[[:punct:]]//g'
+ 163012 up  726  3 users  load average 121 107 085
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# df -Th
+Filesystem     Type      Size  Used Avail Use% Mounted on
+/dev/sda1      ext4       19G  5.4G   13G  30% /
+udev           devtmpfs  494M  4.0K  494M   1% /dev
+tmpfs          tmpfs     201M  796K  200M   1% /run
+none           tmpfs     5.0M     0  5.0M   0% /run/lock
+none           tmpfs     501M  184K  501M   1% /run/shm
+root@krosum:~/SH# df -Th|awk '{print $3}'
+Size
+19G
+494M
+201M
+5.0M
+501M
+root@krosum:~/SH# df -Th|awk '{print $3}'|sed '1d'
+19G
+494M
+201M
+5.0M
+501M
+root@krosum:~/SH# df -Th|awk '{print $3}'|sed '1d'|grep .$
+19G
+494M
+201M
+5.0M
+501M
+root@krosum:~/SH# df -Th|awk '{print $3}'|sed '1d'|sed 's/.$//'
+19
+494
+201
+5.0
+501
+root@krosum:~/SH# df -Th|awk '{print $3}'|sed '1d'
+19G
+494M
+201M
+5.0M
+501M
+root@krosum:~/SH# df -Th|awk '{print $3}'|sed '1d' >IP
+root@krosum:~/SH# 
+root@krosum:~/SH# cat -n IP
+     1	19G
+     2	494M
+     3	201M
+     4	5.0M
+     5	501M
+root@krosum:~/SH# sed 's/.$//' IP
+19
+494
+201
+5.0
+501
+root@krosum:~/SH# vi IP
+root@krosum:~/SH# cat -n IP
+     1	450
+     2	19G
+     3	494M
+     4	201M
+     5	120
+     6	5.0M
+     7	501M
+root@krosum:~/SH# sed 's/.$//' IP
+45
+19
+494
+201
+12
+5.0
+501
+root@krosum:~/SH# sed 's/[A-Z]$//' IP
+450
+19
+494
+201
+120
+5.0
+501
+root@krosum:~/SH# cat IP
+450
+19G
+494M
+201M
+120
+5.0M
+501M
+root@krosum:~/SH# vi IP
+root@krosum:~/SH# vi IP2
+root@krosum:~/SH# 
+root@krosum:~/SH# cat -n IP2
+     1	ram,sales,sales,sales,sales,1234
+     2	kumar,SALES,sales,Sales,sales,sales
+     3	sales,sale,sales,sales,sales
+root@krosum:~/SH# 
+root@krosum:~/SH# sed 's/sales/****/' IP2
+ram,****,sales,sales,sales,1234
+kumar,SALES,****,Sales,sales,sales
+****,sale,sales,sales,sales
+root@krosum:~/SH# 
+root@krosum:~/SH# sed 's/sales/****/2' IP2
+ram,sales,****,sales,sales,1234
+kumar,SALES,sales,Sales,****,sales
+sales,sale,****,sales,sales
+root@krosum:~/SH# 
+root@krosum:~/SH# sed 's/sales/****/3' IP2
+ram,sales,sales,****,sales,1234
+kumar,SALES,sales,Sales,sales,****
+sales,sale,sales,****,sales
+root@krosum:~/SH# 
+root@krosum:~/SH# sed 's/sales/****/4' IP2
+ram,sales,sales,sales,****,1234
+kumar,SALES,sales,Sales,sales,sales
+sales,sale,sales,sales,****
+root@krosum:~/SH# sed 's/sales/****/4i' IP2
+ram,sales,sales,sales,****,1234
+kumar,SALES,sales,Sales,****,sales
+sales,sale,sales,sales,****
+root@krosum:~/SH# 
+root@krosum:~/SH# sed '2s/sales/****/2' IP2 
+ram,sales,sales,sales,sales,1234
+kumar,SALES,sales,Sales,****,sales
+sales,sale,sales,sales,sales
+root@krosum:~/SH# sed '2s/sales/****/2i' IP2 
+ram,sales,sales,sales,sales,1234
+kumar,SALES,****,Sales,sales,sales
+sales,sale,sales,sales,sales
+
+ 
+#####################################################################################
+
+root@krosum:~/SH# 
+root@krosum:~/SH# ps -e|sed -r 's/[A-Za-z]+d$|bash/DAEMON/'
+  PID TTY          TIME CMD
+    1 ?        00:00:01 init
+    2 ?        00:00:00 DAEMON
+    3 ?        00:00:00 ksoftirqd/0
+    5 ?        00:00:01 kworker/u:0
+    6 ?        00:00:00 migration/0
+    7 ?        00:00:00 watchdog/0
+    8 ?        00:00:00 cpuset
+    9 ?        00:00:00 khelper
+   10 ?        00:00:00 kdevtmpfs
+   11 ?        00:00:00 netns
+   12 ?        00:00:00 sync_supers
+   13 ?        00:00:00 bdi-default
+   14 ?        00:00:00 DAEMON
+   15 ?        00:00:00 DAEMON
+   16 ?        00:00:00 ata_sff
+   17 ?        00:00:00 DAEMON
+   18 ?        00:00:00 DAEMON
+   21 ?        00:00:00 DAEMON
+   22 ?        00:00:00 kswapd0
+   23 ?        00:00:00 DAEMON
+   24 ?        00:00:00 DAEMON
+   25 ?        00:00:00 fsnotify_mark
+   26 ?        00:00:00 ecryptfs-kthrea
+   27 ?        00:00:00 crypto
+   35 ?        00:00:00 DAEMON
+   37 ?        00:00:00 scsi_eh_0
+   38 ?        00:00:00 scsi_eh_1
+   39 ?        00:00:00 kworker/u:3
+   60 ?        00:00:00 devfreq_wq
+  199 ?        00:00:00 mpt_poll_0
+  202 ?        00:00:00 mpt/0
+  217 ?        00:00:00 scsi_eh_2
+  232 ?        00:00:00 jbd2/sda1-8
+  233 ?        00:00:00 ext4-dio-unwrit
+  321 ?        00:00:00 upstart-udev-br
+  342 ?        00:00:00 DAEMON
+  411 ?        00:00:00 DAEMON
+  412 ?        00:00:00 DAEMON
+  497 ?        00:00:00 DAEMON
+  645 ?        00:00:00 upstart-socket-
+  723 ?        00:00:00 dbus-daemon
+  739 ?        00:00:00 modem-manager
+  740 ?        00:00:00 DAEMON
+  741 ?        00:00:01 DAEMON
+  745 ?        00:00:00 avahi-daemon
+  746 ?        00:00:00 avahi-daemon
+  751 ?        00:00:00 NetworkManager
+  754 ?        00:00:00 DAEMON
+  765 ?        00:00:00 DAEMON
+  787 ?        00:00:01 DAEMON
+  800 ?        00:00:00 DAEMON
+  871 ?        00:00:00 dhclient3
+ 1011 tty4     00:00:00 getty
+ 1021 tty5     00:00:00 getty
+ 1035 tty2     00:00:00 getty
+ 1037 tty3     00:00:00 getty
+ 1043 tty6     00:00:00 getty
+ 1056 ?        00:00:00 DAEMON
+ 1057 ?        00:00:00 DAEMON
+ 1058 ?        00:00:00 cron
+ 1062 ?        00:00:00 lightdm
+ 1087 tty7     00:04:44 Xorg
+ 1099 ?        00:00:08 DAEMON
+ 1118 ?        00:00:01 tpvmlp
+ 1124 ?        00:00:01 apache2
+ 1126 ?        00:00:00 apache2
+ 1130 ?        00:00:00 apache2
+ 1131 ?        00:00:00 apache2
+ 1275 ?        00:00:00 ttm_swap
+ 1402 ?        00:00:00 accounts-daemon
+ 1523 tty1     00:00:00 getty
+ 1525 ?        00:00:00 console-kit-dae
+ 2083 ?        00:00:00 lightdm
+ 2147 ?        00:00:00 DAEMON
+ 2203 ?        00:00:00 rtkit-daemon
+ 2702 ?        00:00:00 gnome-keyring-d
+ 2713 ?        00:00:12 gnome-session
+ 2750 ?        00:00:00 ssh-agent
+ 2753 ?        00:00:00 dbus-launch
+ 2754 ?        00:00:03 dbus-daemon
+ 2758 ?        00:00:00 DAEMON
+ 2760 ?        00:00:00 gvfs-fuse-daemo
+ 2776 ?        00:00:19 gnome-settings-
+ 2782 ?        00:02:47 compiz
+ 2793 ?        00:00:00 pulseaudio
+ 2797 ?        00:00:00 gconfd-2
+ 2798 ?        00:00:00 gconf-helper
+ 2800 ?        00:00:00 gvfsd-metadata
+ 2801 ?        00:00:09 gnome-fallback-
+ 2802 ?        00:00:09 polkit-gnome-au
+ 2804 ?        00:00:10 nm-applet
+ 2809 ?        00:00:50 DAEMON
+ 2811 ?        00:00:13 nautilus
+ 2814 ?        00:00:10 bluetooth-apple
+ 2820 ?        00:00:00 gvfs-gdu-volume
+ 2822 ?        00:00:00 udisks-daemon
+ 2823 ?        00:00:00 udisks-daemon
+ 2827 ?        00:00:00 gvfs-gphoto2-vo
+ 2831 ?        00:00:02 gvfs-afc-volume
+ 2849 ?        00:00:00 gvfsd-trash
+ 2854 ?        00:00:00 gvfsd-burn
+ 2872 ?        00:00:16 bamfdaemon
+ 2903 ?        00:00:10 gdu-notificatio
+ 2906 ?        00:00:00 sh
+ 2907 ?        00:00:05 gtk-window-deco
+ 2910 ?        00:00:18 unity-panel-ser
+ 2913 ?        00:00:01 hud-service
+ 2928 ?        00:00:00 indicator-DAEMON
+ 2930 ?        00:00:00 indicator-sessi
+ 2932 ?        00:00:00 indicator-datet
+ 2934 ?        00:00:00 indicator-messa
+ 2936 ?        00:00:11 indicator-print
+ 2938 ?        00:00:00 indicator-appli
+ 2980 ?        00:00:00 geoclue-master
+ 2986 ?        00:00:00 ubuntu-geoip-pr
+ 2993 ?        00:00:10 telepathy-indic
+ 2999 ?        00:00:00 mission-control
+ 3004 ?        00:00:13 gnome-screensav
+ 3005 ?        00:00:00 zeitgeist-datah
+ 3013 ?        00:00:00 zeitgeist-daemo
+ 3019 ?        00:00:00 zeitgeist-fts
+ 3023 ?        00:00:00 cat
+ 3036 ?        00:00:01 unity-applicati
+ 3038 ?        00:00:00 unity-files-dae
+ 3040 ?        00:00:00 unity-music-dae
+ 3042 ?        00:00:00 unity-lens-vide
+ 3092 ?        00:00:00 unity-musicstor
+ 3136 ?        00:00:01 unity-scope-DAEMON
+ 3140 ?        00:01:43 gnome-terminal
+ 3167 ?        00:00:00 gnome-pty-helpe
+ 3170 pts/0    00:00:00 DAEMON
+ 3223 pts/0    00:00:00 su
+ 3231 pts/0    00:00:03 DAEMON
+ 3287 pts/2    00:00:00 DAEMON
+ 3340 pts/2    00:00:00 su
+ 3348 pts/2    00:00:01 DAEMON
+ 3421 ?        00:00:12 update-notifier
+ 3524 ?        00:00:00 dbus
+ 3525 ?        00:00:00 deja-dup-monito
+ 3965 pts/3    00:00:00 DAEMON
+ 4070 ?        00:00:00 dconf-service
+ 4539 ?        00:00:09 notify-DAEMON
+ 4704 ?        00:00:00 flush-8:0
+ 8458 pts/5    00:00:00 DAEMON
+ 8563 ?        00:00:00 kworker/0:0
+ 8645 ?        00:00:00 kworker/0:1
+ 8710 ?        00:00:00 kworker/0:2
+ 8741 pts/2    00:00:00 ps
+ 8742 pts/2    00:00:00 DAEMON
+root@krosum:~/SH# 
+root@krosum:~/SH# ps -e|sed -nr 's/[A-Za-z]+d$|bash/DAEMON/p'
+    2 ?        00:00:00 DAEMON
+   14 ?        00:00:00 DAEMON
+   15 ?        00:00:00 DAEMON
+   17 ?        00:00:00 DAEMON
+   18 ?        00:00:00 DAEMON
+   21 ?        00:00:00 DAEMON
+   23 ?        00:00:00 DAEMON
+   24 ?        00:00:00 DAEMON
+   35 ?        00:00:00 DAEMON
+  342 ?        00:00:00 DAEMON
+  411 ?        00:00:00 DAEMON
+  412 ?        00:00:00 DAEMON
+  497 ?        00:00:00 DAEMON
+  740 ?        00:00:00 DAEMON
+  741 ?        00:00:01 DAEMON
+  754 ?        00:00:00 DAEMON
+  765 ?        00:00:00 DAEMON
+  787 ?        00:00:01 DAEMON
+  800 ?        00:00:00 DAEMON
+ 1056 ?        00:00:00 DAEMON
+ 1057 ?        00:00:00 DAEMON
+ 1099 ?        00:00:08 DAEMON
+ 2147 ?        00:00:00 DAEMON
+ 2758 ?        00:00:00 DAEMON
+ 2809 ?        00:00:50 DAEMON
+ 2928 ?        00:00:00 indicator-DAEMON
+ 3136 ?        00:00:01 unity-scope-DAEMON
+ 3170 pts/0    00:00:00 DAEMON
+ 3231 pts/0    00:00:03 DAEMON
+ 3287 pts/2    00:00:00 DAEMON
+ 3348 pts/2    00:00:01 DAEMON
+ 3965 pts/3    00:00:00 DAEMON
+ 4539 ?        00:00:09 notify-DAEMON
+ 8458 pts/5    00:00:00 DAEMON
+ 8745 pts/2    00:00:00 DAEMON
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# ps -e|sed -nr 's/d$|bash/DAEMON/p'
+    2 ?        00:00:00 kthreadDAEMON
+   14 ?        00:00:00 kintegrityDAEMON
+   15 ?        00:00:00 kblockDAEMON
+   17 ?        00:00:00 khubDAEMON
+   18 ?        00:00:00 mDAEMON
+   21 ?        00:00:00 khungtaskDAEMON
+   23 ?        00:00:00 ksmDAEMON
+   24 ?        00:00:00 khugepageDAEMON
+   35 ?        00:00:00 kthrotlDAEMON
+  342 ?        00:00:00 udevDAEMON
+  411 ?        00:00:00 udevDAEMON
+  412 ?        00:00:00 udevDAEMON
+  497 ?        00:00:00 kpsmouseDAEMON
+  740 ?        00:00:00 bluetoothDAEMON
+  741 ?        00:00:01 rsyslogDAEMON
+  754 ?        00:00:00 krfcommDAEMON
+  765 ?        00:00:00 cupsDAEMON
+  787 ?        00:00:01 polkitDAEMON
+  800 ?        00:00:00 colorDAEMON
+ 1056 ?        00:00:00 acpiDAEMON
+ 1057 ?        00:00:00 atDAEMON
+ 1099 ?        00:00:08 mysqlDAEMON
+ 2147 ?        00:00:00 upowerDAEMON
+ 2702 ?        00:00:00 gnome-keyring-DAEMON
+ 2758 ?        00:00:00 gvfsDAEMON
+ 2809 ?        00:00:50 vmtoolsDAEMON
+ 2928 ?        00:00:00 indicator-sounDAEMON
+ 3136 ?        00:00:01 unity-scope-viDAEMON
+ 3170 pts/0    00:00:00 DAEMON
+ 3231 pts/0    00:00:03 DAEMON
+ 3287 pts/2    00:00:00 DAEMON
+ 3348 pts/2    00:00:01 DAEMON
+ 3965 pts/3    00:00:00 DAEMON
+ 4539 ?        00:00:09 notify-osDAEMON
+ 8458 pts/5    00:00:00 DAEMON
+ 8751 pts/2    00:00:00 seDAEMON
+root@krosum:~/SH# 
+root@krosum:~/SH# ps -e|sed -nr 's/[A-Za-z]+d$|bash/DAEMON/p'
+    2 ?        00:00:00 DAEMON
+   14 ?        00:00:00 DAEMON
+   15 ?        00:00:00 DAEMON
+   17 ?        00:00:00 DAEMON
+   18 ?        00:00:00 DAEMON
+   21 ?        00:00:00 DAEMON
+   23 ?        00:00:00 DAEMON
+   24 ?        00:00:00 DAEMON
+   35 ?        00:00:00 DAEMON
+  342 ?        00:00:00 DAEMON
+  411 ?        00:00:00 DAEMON
+  412 ?        00:00:00 DAEMON
+  497 ?        00:00:00 DAEMON
+  740 ?        00:00:00 DAEMON
+  741 ?        00:00:01 DAEMON
+  754 ?        00:00:00 DAEMON
+  765 ?        00:00:00 DAEMON
+  787 ?        00:00:01 DAEMON
+  800 ?        00:00:00 DAEMON
+ 1056 ?        00:00:00 DAEMON
+ 1057 ?        00:00:00 DAEMON
+ 1099 ?        00:00:08 DAEMON
+ 2147 ?        00:00:00 DAEMON
+ 2758 ?        00:00:00 DAEMON
+ 2809 ?        00:00:50 DAEMON
+ 2928 ?        00:00:00 indicator-DAEMON
+ 3136 ?        00:00:01 unity-scope-DAEMON
+ 3170 pts/0    00:00:00 DAEMON
+ 3231 pts/0    00:00:03 DAEMON
+ 3287 pts/2    00:00:00 DAEMON
+ 3348 pts/2    00:00:01 DAEMON
+ 3965 pts/3    00:00:00 DAEMON
+ 4539 ?        00:00:09 notify-DAEMON
+ 8458 pts/5    00:00:00 DAEMON
+ 8757 pts/2    00:00:00 DAEMON
+root@krosum:~/SH# 
+root@krosum:~/SH# ps -e|sed -nr 's/[A-Za-z]+d$|bash/(&)/p'
+    2 ?        00:00:00 (kthreadd)
+   14 ?        00:00:00 (kintegrityd)
+   15 ?        00:00:00 (kblockd)
+   17 ?        00:00:00 (khubd)
+   18 ?        00:00:00 (md)
+   21 ?        00:00:00 (khungtaskd)
+   23 ?        00:00:00 (ksmd)
+   24 ?        00:00:00 (khugepaged)
+   35 ?        00:00:00 (kthrotld)
+  342 ?        00:00:00 (udevd)
+  411 ?        00:00:00 (udevd)
+  412 ?        00:00:00 (udevd)
+  497 ?        00:00:00 (kpsmoused)
+  740 ?        00:00:00 (bluetoothd)
+  741 ?        00:00:01 (rsyslogd)
+  754 ?        00:00:00 (krfcommd)
+  765 ?        00:00:00 (cupsd)
+  787 ?        00:00:01 (polkitd)
+  800 ?        00:00:00 (colord)
+ 1056 ?        00:00:00 (acpid)
+ 1057 ?        00:00:00 (atd)
+ 1099 ?        00:00:08 (mysqld)
+ 2147 ?        00:00:00 (upowerd)
+ 2758 ?        00:00:00 (gvfsd)
+ 2809 ?        00:00:50 (vmtoolsd)
+ 2928 ?        00:00:00 indicator-(sound)
+ 3136 ?        00:00:01 unity-scope-(vid)
+ 3170 pts/0    00:00:00 (bash)
+ 3231 pts/0    00:00:03 (bash)
+ 3287 pts/2    00:00:00 (bash)
+ 3348 pts/2    00:00:01 (bash)
+ 3965 pts/3    00:00:00 (bash)
+ 4539 ?        00:00:09 notify-(osd)
+ 8458 pts/5    00:00:00 (bash)
+ 8760 pts/2    00:00:00 (sed)
+root@krosum:~/SH# 
+root@krosum:~/SH# ps -e|sed -nr 's/[A-Za-z]+d$|bash/(&)/p'
+    2 ?        00:00:00 (kthreadd)
+   14 ?        00:00:00 (kintegrityd)
+   15 ?        00:00:00 (kblockd)
+   17 ?        00:00:00 (khubd)
+   18 ?        00:00:00 (md)
+   21 ?        00:00:00 (khungtaskd)
+   23 ?        00:00:00 (ksmd)
+   24 ?        00:00:00 (khugepaged)
+   35 ?        00:00:00 (kthrotld)
+  342 ?        00:00:00 (udevd)
+  411 ?        00:00:00 (udevd)
+  412 ?        00:00:00 (udevd)
+  497 ?        00:00:00 (kpsmoused)
+  740 ?        00:00:00 (bluetoothd)
+  741 ?        00:00:01 (rsyslogd)
+  754 ?        00:00:00 (krfcommd)
+  765 ?        00:00:00 (cupsd)
+  787 ?        00:00:01 (polkitd)
+  800 ?        00:00:00 (colord)
+ 1056 ?        00:00:00 (acpid)
+ 1057 ?        00:00:00 (atd)
+ 1099 ?        00:00:08 (mysqld)
+ 2147 ?        00:00:00 (upowerd)
+ 2758 ?        00:00:00 (gvfsd)
+ 2809 ?        00:00:51 (vmtoolsd)
+ 2928 ?        00:00:00 indicator-(sound)
+ 3136 ?        00:00:01 unity-scope-(vid)
+ 3170 pts/0    00:00:00 (bash)
+ 3231 pts/0    00:00:03 (bash)
+ 3287 pts/2    00:00:00 (bash)
+ 3348 pts/2    00:00:01 (bash)
+ 3965 pts/3    00:00:00 (bash)
+ 4539 ?        00:00:09 notify-(osd)
+ 8458 pts/5    00:00:00 (bash)
+ 8783 pts/2    00:00:00 (sed)
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# pwd
+/root/SH
+root@krosum:~/SH# pwd|sed 's//root/SH/MY-DIR/'
+sed: -e expression #1, char 9: unknown option to `s'
+root@krosum:~/SH# 
+root@krosum:~/SH# pwd|sed 's/\/root\/SH/MY-DIR/'
+MY-DIR
+root@krosum:~/SH# pwd|sed 's/\/root\/SH/\/MY-DIR/'
+/MY-DIR
+root@krosum:~/SH# echo "10.20.30.40"|grep "."
+10.20.30.40
+
+root@krosum:~/SH# echo "10.20.30.40"|sed 's/\./\//'
+10/20.30.40
+root@krosum:~/SH# echo "10.20.30.40"|sed 's/\./\//g'
+10/20/30/40
+root@krosum:~/SH# 
+
+
+
+#################################################################################################
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+

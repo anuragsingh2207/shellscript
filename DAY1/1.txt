@@ -1,0 +1,1013 @@
+
+About Shell 
+
+Types of shell
+
+subshell 
+
+shell commandline structures
+
+Script(program)
+
+shell script
+==================
+	1. Variable
+		a. User defined variable(UDV)
+		b. Shell variables(or) env variable(or) builin variable (or)system variable
+		c. Commandline arguments
+		d. Array
+
+	2. Operators
+
+		a.Arithmetic
+		b.Relational
+		c.Logical	
+		d.Filetest
+
+	3. Conditional statements - Validation(testing) - only one time
+		a. if 
+		    |__ I) if only 
+		    |__ II) if ..else
+		    |__ III) if..elif 
+		b. case
+
+	4. Looping statements - Validation(testing) - more than one time
+		a. Conditional - while,until
+		b. Collection  - for,select
+
+	5. File Handling
+
+	6. Function(user defined)
+		a.simple function call
+		b.call with arguments
+		c.scope 
+		d.return 
+		e.loadable (or) runnablescript
+
+	7. Filters(grep,find,diff,comm,sort,cut,paste,tee,tr)
+
+	8. grep + Regx
+	
+	9. sed + Regx
+
+	10. awk(script) + Regx
+	
+	11. Heredocument (or) Line oriented doc << 
+		
+	     shell script -----> DB,CGI,SSH,external Appln(perl,python,...)
+
+	12. trap 
+
+##################################################################################################
+
+ what is an os?
+ 
+ OS - program (system software) - interface userApplication - H/W 
+
+ Core part of OS - Kernel 
+
+
+ +----------------------------------+
+ |    user level		    |
+ ---------------------shell----------
+ |    kernel level		    |
+ +----------------------------------+
+ |    H/w level 		    |
+ ------------------------------------
+
+ shell - interpreter 
+
+ Unix/Linux - Abstraction ->File,Process
+
+ Ex: any os command (File,Process)
+
+ File - Data - under the storage device
+ Process - Data - under the CPU
+
+
+ 	User level 
+         |
+	 shell
+	 |
+ +------------------------------------------+
+ |     system call()=FD			    | FD = 0(STDIN),1(STDOUT),2(STDERR) 0X12333(memory call)
+ |       |				    |     
+ |    FileSystem <--->PCB|IPC;SCHED;MM;NET| | FD= 3 to 2power 32/64 ->Valid system call
+ |	 |				    | FD= -1 - Failed (Error)
+ |      Device Driver			    |
+ |	 |				    |
+ |      Device Controller		    |
+ |       |                                  |
+ +------------------------------------------+
+         H/W
+
+   strace command
+   ------
+ 
+
+ types of shell
+ ------------------
+ 1.BourneShell(sh) - AT&T 	
+ 2.KornShell(ksh)  - AT&T	 
+
+ 3.CSHELL (csh) ->tcsh->expect  
+
+ 4. BourneAgainSHell (GNU) - bash
+
+ in Linux
+ ----------
+   |__default shell is bash 
+
+ How to view list of available shells ?
+
+ cat /etc/shells
+
+ How to find current working shell?
+
+ 1)  ps command - in commandline 
+
+ 2)  echo $0    - in commandline 
+	  --
+	   |__Variable 
+
+ OFF --->ON ====> POST ===> MBR ==> Bootloader(GRUB/GRUB2) ==> Kernel ==> Process(init/systemD)
+									    |     
+									  system process
+									    |
+									    |
+									getty(system process) Login:___ password:______         
+									    |
+									   shell (CLI)    vs  Desktop (GUI)
+									    |			  |
+									  User Application - userprocess   
+
+
+
+shell is a parent of our user process (commands,scripts, commandline)
+-----      --------------------------
+
+userprocess		vs		system process
+------------				---------------
+by user					by systemD(or) init
+
+TTY:pts/portnumber			TTY:?
+
+Start->R+->Exit				Start-->R+ ( background - systemprocess/daemon)
+       ||  ----
+      Stop
+
+Parent is working shell			system process parent is init/systemD - PID:1
+(shell is a parent of 
+ user process)
+
+root@host~]# ssh host01 <== Command <===== sshd (daemon) system process - parent is systemD/init
+	    ............
+		 |
+		process(Child)
+
+Parent is working shell
+
+
+root@host~]# mysql -u root ....  <=== mysqld
+
+root@host~]# at <================= atd
+
+cron <=========================crond 
+
+#################################################################################################
+
+shell script - command based language 
+
+shell commandline structures
+-------------------------------
+
+root@host~]# .....		student@host~]$ .......
+------------                    ---------------
+ |					|
+ |					|
+ |__________Primary Prompt _____________|
+
+
+  1) Command Only : root@host~]# date
+		    root@host~]# ls
+		    root@host~]# ps
+
+
+ 2) Command arguments : root@host~]# date<space>+%D
+			root@host~]# ls -l /etc/passwd
+			root@host~]# ps -f
+
+			root@host~]# echo "Hello unix world" - Command with single argument
+			root@host~]# echo  Hello unix world  - Command with multiple arguments
+			
+
+ 3) Command command : root@host~]# echo "Today:date +%D"  -->Today: date +%D
+
+			apelix@krosum:~$ echo "Today:`date +%D`"
+			Today:06/22/20
+			apelix@krosum:~$ echo "Today:$(date +%D)"
+			Today:06/22/20
+
+ #################################################################################################
+
+ Login: student
+ passwd :
+
+ sh-4.1# echo $0
+ sh
+ sh-4.1# ps
+  
+ sh
+ sh-4.1# bash{Enter} - creating subshell (child)
+ student@hostname~]$ echo $0
+ bash
+ student@hostname~]$ ps
+
+	sh -parent
+	bash - child process
+	
+ 
+ ##################################################################################################
+ 
+ #!/bin/bash (or) #!/bin/sh - shabang line
+
+
+ 
+ File: p1.sh  # with out using #!
+ ---------------
+ echo "Sample test"
+ ...
+ ...
+ ...
+ ...
+ echo "End of the line"
+ --------------------------
+ root@host01~]# echo $0
+ bash
+ root@host01~]# chmod +x p1.sh (or) chmod a+x p1.sh (or) chmod 777 p1.sh 
+
+ root@host01~]# /root/p1.sh (or) ./p1.sh
+	        |----------      |--------(relative path)	 
+		|(absolute path)
+		|
+
+ Sample test
+ ...
+ ...
+ ...
+ End of the line
+ ------------------------//Success
+
+ 
+ root@host02~]# echo $0
+ csh 
+ root@host02~]# /root/p1.sh (or) ./p1.sh{Enter} by csh
+ Sample test
+ ...
+ ...//Error 
+ 
+ 
+ 
+
+ 
+ 
+ File: p2.sh
+ ---------------
+ #!/bin/bash 
+ echo "Sample test"
+ ...
+ ...
+ ...
+ ...
+ echo "End of the line"
+ --------------------------
+ root@host01~]# echo $0
+ bash
+ root@host01~]# chmod +x p1.sh (or) chmod a+x p1.sh (or) chmod 777 p1.sh 
+
+ root@host01~]# /root/p1.sh (or) ./p1.sh
+	        |----------      |--------(relative path)	 
+		|(absolute path)
+		|
+
+ Sample test
+ ...
+ ...
+ ...
+ End of the line
+ ------------------------//Success
+
+
+
+ 
+ root@host02~]# echo $0
+ csh 
+ root@host02~]# /root/p2.sh (or) ./p2.sh{Enter} by csh
+ csh->bash 
+	| execute the script
+ Sample test
+ ...
+ ...//Success
+
+
+##################################################################################################
+
+ How to write shell script?
+
+ vi (or) vim (or) nano editor followed by filename.sh 
+
+ ex: vi p1.sh 
+ --
+
+ shell script file is ASCII/TEXT 
+ -----------------------------------
+
+ vi p1 {Enter}
+ -----------------//valid
+ 
+ 
+ To assign execute permission 
+ ----------------------------
+    chmod a+x filename (or) chmod +x filename (or) chmod ugo+x filename
+	 (or)
+    chmod 777 filename
+ 
+ 1 1 1 -->7 
+	
+ map your shell script
+ ---
+  |__1.absoulte path  /home/student/project/p1 (or) p1.sh
+  |
+  |__2. relative path  ./p1 (or) ./p1.sh
+
+ 
+ shell script support comment lines
+ ------------------------------------
+	1.Single line comment # 
+
+	2. Multi line  comment <<
+
+	
+apelix@krosum:~$ cat -n a3 
+     1	echo "Testing code"
+     2	date
+     3	echo "--------------------"
+     4	uptime # uptime is a system command
+     5	# using uptime command 
+     6	# will get cpu loadbalance
+     7	<<Abc
+     8	uptime is a system command
+     9	using uptime will get 
+    10	cpu loadbalance
+    11	using uptime will get how long hrs cpu is running
+    12	uptime is belongs to /proc
+    13	/proc is virtual directory - size of /proc is zero(0)
+    14	/proc is mapping to proc filesystem
+    15	proc map to CPU,RAM 
+    16	Abc
+    17	echo # empty line
+    18	echo "Thank you"
+apelix@krosum:~$ ./a3 
+Testing code
+Mon Jun 22 11:10:19 IST 2020
+--------------------
+ 11:10:19 up  1:45,  3 users,  load average: 1.37, 0.71, 0.64
+
+Thank you
+apelix@krosum:~$ 
+##########################################################################################################################
+
+new to script(program)
+-----------------------
+
+ STEP 1: Understand the definition ( what is ____________)
+
+ STEP 2: Understand the syntax (Rule)
+
+ STEP 3: Understand Example
+
+ STEP 4: Exercise 
+
+ 
+
+					echo
+ Keyboard(STDIN)------------Script--------------------Monitor(STDOUT)
+		  read
+
+ Syntax:-
+ ----------
+ read<space>UDV 
+
+ read var - interface to keyboard (STDIN)
+
+
+ echo "Enter your name:" ==>(1)
+ read name ================>(2)
+
+
+ read -p "Prompt message"<space>UDV
+	 |---STDOUT-----        ---STDINT--
+
+ 
+ read -p "Enter your name:" name <===(1)
+
+
+
+ shell variables
+ ------------------
+ in built variables
+
+ env - command - get list of all shell variable
+ ---
+ 
+ User defined variable(UDV)	vs	Shell variable(in built variable)
+ ----------------------------           ---------------------------------
+ local					global
+ =====
+  |__Current process(session)		|__all the process(parent,child) - all the session
+
+
+
+ 
+ IP:10.20.30.40
+
+ Login as: student		Login:root
+ passwd:			passwd:
+     |				 |
+   read and execute /etc/profile
+     |
+    .bashrc .bash_logout .bash_history
+     |
+ student@host~]$		root@host~]# 
+ 
+ student@host~]$ ls -a		root@host~]# ls -a
+
+ .bashrc .bash_logout 		.bashrc .bash_logout  
+ --------------------		-----------------------
+	|				|
+	|___personal profile file_______|
+
+
+
+
+root@host~]# vi /etc/profile
+
+
+export PORT=80
+DB="/usr/lib/oracle"
+export DB
+
+:wq
+
+userA@host~]$ echo $PORT ->80	userB@host~]$ echo $PORT ->80  userC@host~]$ echo $DB ->/usr/lib/oracle
+------------- ==========        ------------- ==========       ------------- ========
+
+
+userA@host~]$ env|grep  PORT 
+PORT=80
+
+
+
+userA@host~]$ vi .bashrc
+
+export var=100
+:wq
+
+userA@host~]$ echo $var -->100	  userB@host~]$ echo $var -->Empty
+
+
+vi /etc/profile 
+
+export PS1='#'
+
+
+student@host~]$ vi .bashrc
+
+ export PS1='\u@\h'
+
+:wq 
+
+Login :student
+passwd: ....
+
+student@host<Command>
+------------
+
+PS1
+PS2
+PS3 - select loop
+PS4 - debugging + 
+
+#################################################################################################
+
+ File:p1.sh
+ ----------
+ var=100  var| 100 |0x1234
+ ...
+ ...
+ echo $var
+ unset var ---> deallocating the address of var 
+ ...
+ ...
+ ...
+ ...
+ ...
+ ...
+ ...
+ ...
+ ...
+ -----------
+ 
+  Variable - commands used 
+  --------------------------
+  read variable
+  echo $variable 
+
+  unset variable
+  export variable
+  --------------------------
+ ###########################################################################################################
+ 
+ Operators
+ -----------
+  Arithmetic 
+  ----------
+	
+   + - * / %  (operators)
+
+  echo 10 + 20 -->10 + 20
+  ---- =======
+
+  echo 10+20 -->10+20
+  ---- =====
+ 	 |
+	like string
+ 
+  1.expr - command 
+  -----------------
+  Syntax:-
+  ---------
+  expr<space>Operand<space>OPERATOR<space>Operand
+	     .....................................
+
+  expr 10 + 20 -->30
+  
+  a=100
+  b=200
+  expr $a + $b -->300
+ 
+   
+root@krosum:~/SH# echo 10 + 20
+10 + 20
+root@krosum:~/SH# expr  10 + 20
+30
+root@krosum:~/SH# expr 100 + 400
+500
+root@krosum:~/SH# expr 100 - 400
+-300
+root@krosum:~/SH# expr 100 / 400
+0
+root@krosum:~/SH# expr 100 / 3
+33
+root@krosum:~/SH# expr 100 % 3
+1
+root@krosum:~/SH# expr 10 * 3
+expr: syntax error
+root@krosum:~/SH# expr 10 \* 3
+30
+root@krosum:~/SH# cat /etc/passwd|wc -l
+36
+root@krosum:~/SH# expr `cat /etc/passwd|wc -l` + 100
+136
+root@krosum:~/SH# expr `cat /etc/passwd|wc -l` - 10
+26
+root@krosum:~/SH# expr 10+20
+10+20
+root@krosum:~/SH# echo "Total value:expr 10 + 20"
+Total value:expr 10 + 20
+root@krosum:~/SH# echo "Total value:`expr 10 + 20`"
+Total value:30
+root@krosum:~/SH# v=`expr 10 + 20`
+root@krosum:~/SH# echo $v
+30
+root@krosum:~/SH# n=5
+root@krosum:~/SH# expr $n+=1
+5+=1
+root@krosum:~/SH# expr $n++
+5++
+root@krosum:~/SH# echo $n
+5
+
+root@krosum:~/SH# n=`expr $n + 1`
+root@krosum:~/SH# echo $n
+6
+root@krosum:~/SH# 
+
+expr won't support floating point operation
+---- 
+expr won't support non-numeric value 
+----
+
+expr 10.0 + 20 ->Error 
+
+expr 10 + "abc" -->Error 
+
+
+2) compound style 
+------------------
+  $((expression))
+
+ echo $((10+20)) -->30
+
+ a=100
+ b=200
+ echo $((a+b)) -->300
+
+ echo $((10*3)) -->30
+
+ 
+
+root@krosum:~/SH# echo $((10+20))
+30
+root@krosum:~/SH# echo $((10+                      20))
+30
+root@krosum:~/SH# echo $((10*3))
+30
+root@krosum:~/SH# echo $((450/5))
+90
+root@krosum:~/SH# echo $((2**3))
+8
+root@krosum:~/SH# echo $((2**5))
+32
+root@krosum:~/SH# echo $((3**2))
+9
+root@krosum:~/SH# count=`ps -e|wc -l`
+root@krosum:~/SH# 
+root@krosum:~/SH# echo $count
+150
+root@krosum:~/SH# echo $((count+100))
+250
+root@krosum:~/SH# echo $((count-100))
+50
+root@krosum:~/SH# echo `expr $count + 100`
+250
+root@krosum:~/SH# total=$((10+20+30))
+root@krosum:~/SH# echo $total
+60
+root@krosum:~/SH# total=`expr 10 + 20 + 30`
+root@krosum:~/SH# echo $total
+60
+root@krosum:~/SH# echo $((10.0+0.234))
+-su: 10.0+0.234: syntax error: invalid arithmetic operator (error token is ".0+0.234")
+root@krosum:~/SH# 
+root@krosum:~/SH# 
+root@krosum:~/SH# n=5
+root@krosum:~/SH# echo $((++n))
+6
+root@krosum:~/SH# echo $n
+6
+root@krosum:~/SH# echo $(10+2)
+10+2: command not found
+
+root@krosum:~/SH# echo $(date)
+Mon Jun 22 14:28:03 IST 2020
+root@krosum:~/SH# echo `date`
+Mon Jun 22 14:28:09 IST 2020
+root@krosum:~/SH# 
+
+################################################################################################
+
+ Relational operators  ---result--->True/False(bool) 
+ ---------------------		     0   non-zero <== $?
+         |
+	 |
+ -------------------
+ |		   |
+string		 number -eq -ne -lt -gt -le -ge
+==(or)=			
+!=			0-9
+
+"A-Za-z0-9"
+ -----------
+ string
+ 
+ "AB" == "AB"  --> `whoami` == "root" 
+
+  10  -eq 10  ----> `id -u` -eq 0  --> `ps -e|wc -l`  -gt 500 -->`cat inputfile|wc -l` -lt 100
+
+test operator [ ]
+----         -----
+
+test<space>Expression (or) [<space>Expression<space>]
+
+expr<space>OPERAND<space>OPERATOR<space>OPERAND
+|
+test<space>OPERAND<space>OPERATOR<space>OPERAND
+|
+[<space>OPERAND<space>OPERATOR<space>OPERAND<space>]
+
+
+root@krosum:~/SH# expr 10 + 20
+30
+root@krosum:~/SH# test 10 -eq 10
+root@krosum:~/SH# 
+root@krosum:~/SH# test "abc" == "abc"
+root@krosum:~/SH# 
+root@krosum:~/SH# test 10 -eq 100
+root@krosum:~/SH# 
+root@krosum:~/SH# [ 10 -eq 10 ]
+root@krosum:~/SH# 
+
+
+in commandline
+-----------------
+	$0 - working shell name
+
+ 	$$ - working shell PID
+
+	$? - last command operation of exit code(status)
+	--
+	 |___0 (True/Success)
+	 |
+	 |___1 2 3 4 5 .... 126 127 (False) 
+
+	[ $? -ne 0 ]
+	failed 
+
+
+	
+root@krosum:~/SH# test "abc" == "abc"
+root@krosum:~/SH# 
+root@krosum:~/SH# test 10 -eq 100
+root@krosum:~/SH# 
+root@krosum:~/SH# [ 10 -eq 10 ]
+root@krosum:~/SH# 
+root@krosum:~/SH# test 10 -eq 10;echo $?
+0
+root@krosum:~/SH# test 10 -eq 100;echo $?
+1
+root@krosum:~/SH# [ 10 -eq 10 ];echo $?
+0
+root@krosum:~/SH# [ 10 -eq 100 ];echo $?
+1
+root@krosum:~/SH# [ `whoami` == "root" ];echo $?
+0
+root@krosum:~/SH# [ `whoami` != "root" ];echo $?
+1
+root@krosum:~/SH# 
+
+
+Conditional statements ### Validation/Testing purpose 
+--------------------------
+  |
+  |__ Code block will execute only one time.
+  
+  if statement
+  ------------
+  I) if only style			II) if..else style
+  =================			=====================
+  syntax:-				syntax:-
+  ---------				----------
+  if<space>[ condition ]		if<space>[condition]
+  then					then
+	True block				True block
+  fi					else
+						False block
+					fi
+
+  
+
+
+	if [ condition1 ]
+	then
+		if [ condition2 ]
+		then
+			if [ condition3 ]
+			then
+				if [ condition4 ]
+				then
+					...
+				else
+					false
+				fi
+			else
+				...
+			fi
+		else
+			...
+		fi
+	else
+		..
+	fi
+
+
+	if [ ....]
+	then
+		....
+	else
+		....
+	fi
+
+
+
+ III) if elif - multiconditional statements
+ -------------------------------------------
+
+ Syntax:-
+ ---------
+ if<space>[ condition1 ]
+ then
+	True block1
+ elif<space>[ condition2 ]
+ then
+	True block2
+ elif<space>[ condition3 ]
+ then
+	True block3
+	..
+ elif<space>[ conditionN ]
+ then
+	True blockN
+ else
+	False block
+ fi
+
+ 
+ write a shell script 
+ read a shell name from <STDIN>
+ test input shell is bash --> profile="~/.bashrc"
+ test input shell is sh ----> profile="~/.profile"
+ test input shell is ksh ---> profile="~/.kshrc"
+ 
+ |
+ |__ default shell name is :/bin/nologin  profile="/etc/profile"
+
+ 
+
+ read -p "Enter a shell name:" var
+ if [ $var == "bash" ];then
+	profile="~/.bashrc"
+ elif [ $var == "sh" ];then
+	profile="~/.profile"
+ elif [ $var == "ksh" ];then
+	profile="~/.kshrc" 
+ else
+	echo "Sorry $var is not matched"
+	var="/bin/nologin"
+	profile="/etc/profile"
+ fi
+ echo -e "SHELL NAME:$var\t PROFILE:$profile"
+
+
+
+##########################################################################################
+			    FD
+ command ---output---STDOUT  1
+ -------
+    |______Error____ STDERR  2
+		     ----------
+		      monitor
+
+ command fd>resultfile
+
+ command 1>result.log
+
+ command 2>error.log
+
+###############################################################################################
+
+ Logical operators
+ ------------------
+  |__ in single conditional statement [ ]  test more than one condition
+ 						-----------------------
+  |___we can use logical operators 
+  	         ------------------
+		 logical AND ( -a )
+
+		 logical OR  ( -o )
+
+		 logical NOT  ( ! )
+
+  
+  
+   logical AND ( -a )
+   --------------------
+
+   Condition1	  Condition2		Result
+   ----------	------------		------
+    True             True		 True
+    True             False               False
+    False            True                False
+    False            False               False
+
+
+    name="root"
+    p="WELCOME"
+
+    if [ $name == "root" ];then
+	 if [ $p == "WELCOME" ];then
+			echo "Successs"
+	 else
+		echo "Failed"
+	 fi
+   else
+	echo "Failed"
+   fi
+      
+
+   if [ $name == "root"  -a  $p == "WELCOME" ]
+   then
+		echo "SUCCESS"
+   else
+		echo "Failed"
+   fi
+      
+   port 501-599
+   ----
+    port=550
+
+    if [ $port -gt 500  -a $port -lt 600 ]
+    then
+		echo "Valid"
+    else
+		echo "Invalid"
+    fi
+  
+
+
+   [ 550 -gt 500   -a  650 -lt 670 -a "root"  == "root" ]
+     -----------------------------    =================
+        T1		 T2		   T3
+	|		 |
+	|		 |
+        ------------------
+		True(T)------------ -a   ---True(T3)---  ==>True 
+		  |<--------------- -a --------->
+
+
+
+
+
+
+
+  
+  
+ 
+  logical OR ( -o )
+   --------------------
+
+   Condition1	  Condition2		Result
+   ----------	------------		------
+    True             True		 True
+    True             False               True
+    False            True                True
+    False            False               False
+
+  
+   read -p "Enter a shell name:" var
+
+   if [ $var == "sh" -o $var == "bash" -o $var == "ksh" ];then
+
+		echo "Valid shell"
+   else
+		echo "Invalid shell"
+   fi
+
+
+ logical AND ( -a )
+   --------------------
+
+   Condition1	  Condition2		Result
+   ----------	------------		------
+    True             True		 True
+    True             False               False
+    False            True                False
+    False            False               False
+
+
+ #################################################################################################
+
+ case statement
+ ---------------
+  -> Conditional statement 
+  
+  -> Regx Pattern
+
+  Syntax:-
+  ---------
+  case  variable in
+  
+  pattern1)  Pattern1 operation
+	     ;;
+  pattern2)  Pattern2 operation
+	     ;;
+  pattern3)  Pattern3 operation
+	     ;;
+   ...
+  patternN)  patternN operation
+	     ;;
+   *)	     default operation
+  esac 
+
+  
+###############################################################################################################################
